@@ -29,7 +29,8 @@ app = Flask(__name__)
 
 # ================== إعدادات التطبيق والبروكسي ==================
 app.config['SECRET_KEY'] = 'abdullah-voucher-system-2026-final'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bajaberasobbaj72@db.hlepldoaxayyazklvthv.supabase.co:5432/postgres?sslmode=require'
+# لاحظ تغيير اسم المستخدم ليتضمن معرف المشروع (ضروري للـ Pooler)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.hlepldoaxayyazklvthv:bajaberasobbaj72@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # إخبار Flask بالوثوق بـ Cloudflare والأنفاق (لحل مشكلة HTTP/HTTPS)
