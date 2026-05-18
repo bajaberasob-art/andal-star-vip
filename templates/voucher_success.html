@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── تصميم التذكرة الملكية (Holographic VIP Ticket) ── */
+    .vip-ticket {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.4) 100%);
+        backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--border-bright); border-top: 2px solid var(--accent);
+        border-radius: 32px; position: relative; overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 10px 20px rgba(255,255,255,0.05);
+        margin: 20px auto 40px; max-width: 400px;
+        animation: floatTicket 6s ease-in-out infinite;
+    }
+
+    @keyframes floatTicket {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* لمعان الهولوجرام (Shimmer Effect) */
+    .vip-ticket::after {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg); animation: shimmer 3s infinite; pointer-events: none; z-index: 20;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+
+    /* القطع الجانبية للتذكرة */
+    .ticket-cutout {
+        position: absolute; top: 55%; width: 40px; height: 40px;
+        background-color: var(--bg-primary); border-radius: 50%; z-index: 10;
+        box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
+    }
+    .cutout-left { left: -20px; border-right: 1px solid var(--border-bright); }
+    .cutout-right { right: -20px; border-left: 1px solid var(--border-bright); }
+
+    /* الخط المنقط الفاصل */
+    .ticket-divider {
+        position: absolute; top: calc(55% + 20px); left: 30px; right: 30px;
+        border-top: 2px dashed var(--border-bright); opacity: 0.5;
+    }
+
+    /* ── الباركود الديناميكي مع الليزر ── */
+    .barcode-container { position: relative; width: 80%; height: 45px; margin: 20px auto 0; }
+    .css-barcode {
+        width: 100%; height: 100%;
+        background: repeating-linear-gradient(
+            90deg,
+            var(--text-primary) 0, var(--text-primary) 2px, transparent 2px, transparent 5px,
+            var(--text-primary) 5px, var(--text-primary) 8px, transparent 8px, transparent 10px,
+            var(--text-primary) 10px, var(--text-primary) 11px, transparent 11px, transparent 15px
+        );
+        opacity: 0.4;
+    }
+    .barcode-laser {
+        position: absolute; left: 0; right: 0; height: 2px;
+        background: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
+        animation: laserScan 2s infinite linear alternate; z-index: 5;
+    }
+    @keyframes laserScan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+    /* ── صندوق الكود السري ── */
+    .code-box {
+        background: rgba(0,0,0,0.4); border: 1px solid var(--border-bright);
+        border-radius: 20px; padding: 24px; position: relative; overflow: hidden;
+        box-shadow: inset 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;
+    }
+    .code-box:active { transform: scale(0.97); border-color: var(--accent); }
+    .code-box::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at center, var(--accent-glow), transparent 70%);
+        opacity: 0.15; pointer-events: none;
+    }
+
+    /* ── أزرار الإجراءات السريعة ── */
+    .action-btn {
+        flex: 1; padding: 16px 10px; border-radius: 20px;
+        font-weight: 800; font-size: 13px; font-family: 'Cairo', sans-serif;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+        background: var(--bg-card); color: var(--text-primary);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .action-btn:active { transform: scale(0.92); }
+
+    .btn-copy { background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #000; box-shadow: 0 10px 25px var(--accent-glow); border: none; }
+    .btn-share { border-color: rgba(37, 211, 102, 0.3); color: #25D366; }
+    .btn-print { border-color: var(--border); }
+
+    /* ── إعدادات الطباعة ── */
+    @media print {
+        body { background: white !important; color: black !important; margin: 0; padding: 0; }
+        .no-print, .nav-bar { display: none !important; }
+        .vip-ticket {
+            box-shadow: none !important; border: 2px solid black !important; animation: none !important;
+            border-radius: 12px !important; background: white !important; max-width: 100% !important; margin: 0 !important;
+        }
+        .text-white, .text-\[var\(--text-primary\)\] { color: black !important; }
+        .code-box { background: white !important; border: 2px dashed black !important; }
+        .css-barcode { opacity: 1 !important; filter: invert(1); }
+        .barcode-laser, .ticket-cutout, .ticket-divider, .vip-ticket::after { display: none !important; }
+    }
+</style>
+
+<div class="px-4 pt-6 pb-24">
+
+    <div class="text-center stagger-1 no-print">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4 relative shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+            <div class="absolute inset-0 bg-emerald-400 blur-xl opacity-20 rounded-full animate-pulse"></div>
+            <i class="fas fa-check text-4xl text-emerald-400 relative z-10"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight mb-2">تمت العملية بنجاح!</h1>
+        <p class="text-xs text-[var(--text-muted)] font-bold">تم إصدار الكرت وخصم الرصيد بسلام.</p>
+    </div>
+
+    <div class="vip-ticket stagger-2" id="printableTicket">
+        <div class="ticket-cutout cutout-left"></div>
+        <div class="ticket-cutout cutout-right"></div>
+        <div class="ticket-divider"></div>
+
+        <div class="p-8 pb-10 text-center">
+            <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">تفاصيل الباقة</p>
+            <h2 class="text-xl font-black text-[var(--text-primary)] mb-6">{{ package.name }}</h2>
+
+            <div class="flex justify-between items-center bg-[var(--bg-primary)] border border-[var(--border)] rounded-2xl p-4 shadow-inner">
+                <div class="text-right">
+                    <p class="text-[9px] text-[var(--text-muted)] mb-1 font-bold uppercase tracking-widest">المدفوع</p>
+                    <p class="text-lg font-black text-[var(--accent)]" style="font-family: 'Cormorant Garamond', serif;">{{ final_price | round(0) | int }} <span class="text-[9px] font-sans text-[var(--text-primary)]">ر.ي</span></p>
+                </div>
+                <div class="w-[1px] h-8 bg-[var(--border-bright)]"></div>
+                <div class="text-left">
+                    <p class="text-[9px] text-[var(--text-muted)] mb-1 font-bold uppercase tracking-widest">التاريخ</p>
+                    <p class="text-[11px] font-black text-[var(--text-primary)] font-mono">{{ voucher.sold_at.split(' ')[0] if voucher.sold_at else 'الآن' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-8 pt-10 text-center bg-black/20">
+            <p class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-[0.2em] mb-4">كود الوصول (اضغط للنسخ)</p>
+            
+            <div class="code-box" onclick="copyVoucher()" onmousedown="playGlassSound()">
+                <div class="absolute -right-4 -top-4 opacity-[0.03] text-7xl pointer-events-none"><i class="fas fa-wifi"></i></div>
+                <span id="mikrotikUser" class="text-3xl sm:text-4xl font-black text-[var(--text-primary)] tracking-[0.1em] font-mono break-all select-all relative z-10">
+                    {{ voucher.mikrotik_username }}
+                </span>
+            </div>
+            
+            <div class="barcode-container">
+                <div class="barcode-laser"></div>
+                <div class="css-barcode"></div>
+            </div>
+            <p class="text-[8px] text-[var(--text-muted)] mt-2 font-mono tracking-widest opacity-50">{{ voucher.id }}-{{ final_price | int }}-ANDAL</p>
+        </div>
+    </div>
+
+    <div class="flex gap-3 stagger-3 no-print px-2 max-w-md mx-auto">
+        <button onclick="copyVoucher()" class="action-btn btn-copy" onmousedown="playGlassSound()">
+            <i class="fas fa-copy text-xl"></i>
+            <span>نسخ الكود</span>
+        </button>
+        <button onclick="shareVoucher()" class="action-btn btn-share" onmousedown="playGlassSound()">
+            <i class="fab fa-whatsapp text-xl"></i>
+            <span>مشاركة</span>
+        </button>
+        <button onclick="window.print()" class="action-btn btn-print" onmousedown="playGlassSound()">
+            <i class="fas fa-print text-xl"></i>
+            <span>طباعة</span>
+        </button>
+    </div>
+    
+    <div class="mt-8 text-center stagger-3 no-print">
+        <a href="/dashboard" onclick="playGlassSound()" class="inline-flex items-center gap-2 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors bg-[var(--bg-card)] px-6 py-3 rounded-full border border-[var(--border)]">
+            <i class="fas fa-home"></i> العودة للرئيسية
+        </a>
+    </div>
+
+</div>
+
+<script>
+    // ── إطلاق الاحتفال (Confetti) عند تحميل الصفحة ──
+    document.addEventListener('DOMContentLoaded', () => {
+        if(typeof confetti === 'function') {
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3, angle: 60, spread: 55, origin: { x: 0 },
+                    colors: ['#10b981', '#fbbf24', '#38bdf8']
+                });
+                confetti({
+                    particleCount: 3, angle: 120, spread: 55, origin: { x: 1 },
+                    colors: ['#10b981', '#fbbf24', '#38bdf8']
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100]); // اهتزاز النجاح
+    });
+
+    // ── دالة النسخ باستخدام نظام التنبيهات الموحد ──
+    function copyVoucher() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        const text = "{{ voucher.mikrotik_username }}";
+
+        navigator.clipboard.writeText(text).then(() => {
+            if(navigator.vibrate) navigator.vibrate(50);
+            const container = document.getElementById('toast-container');
+
+            if(container) {
+                const toast = document.createElement('div');
+                toast.className = 'global-toast success';
+                toast.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-check-circle text-emerald-400 text-lg"></i>
+                    </div>
+                    <div><p class="text-white text-sm font-bold">تم نسخ الكود بنجاح! انطلق 🚀</p></div>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toast-leave 0.5s forwards';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
+            } else {
+                alert('✅ تم نسخ اليوزر بنجاح!');
+            }
+        });
+    }
+
+    // ── دالة المشاركة التسويقية عبر واتساب (النسخة الفيروسية) ──
+    function shareVoucher() {
+        if(typeof playGlassSound === 'function') playGlassSound(); // إضافة الصوت
+        const siteUrl = window.location.origin;
+        
+        // النص التسويقي الذي يظهر الرابط بشكل فخم في الواتساب
+        const msg = `🎟️ *تذكرة إنترنت - عندل ستار VIP*\n\n🔹 *الباقة:* {{ package.name }}\n🔑 *كود الدخول:* ${"{{ voucher.mikrotik_username }}"}\n\nنتمنى لك تصفحاً سريعاً وممتعاً! 🚀\n\n👇 حمل التطبيق مجاناً أو ادخل من هنا:\n${siteUrl}`;
+        
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+</script>
+
+{% endblock %}
+

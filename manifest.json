@@ -1,0 +1,23 @@
+{
+  "name": "عندل ستار VIP",
+  "short_name": "عندل ستار",
+  "description": "بوابتك الفاخرة لاشتراكات الإنترنت",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#06050a",
+  "theme_color": "#06050a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
+

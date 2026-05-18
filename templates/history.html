@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور التدريجي ── */
+    .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── بطاقة الملخص الفاخرة (Summary Card) ── */
+    .summary-card {
+        background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0,0,0,0.3) 100%);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-bright);
+        border-radius: 32px;
+        padding: 24px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+        position: relative; overflow: hidden;
+        margin-bottom: 32px;
+    }
+    .summary-card::before {
+        content: ''; position: absolute; top: -50px; right: -50px;
+        width: 120px; height: 120px; background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+        opacity: 0.5; pointer-events: none;
+    }
+
+    /* ── بطاقة العملية المالية (Transaction Card) ── */
+    .tx-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 20px;
+        position: relative;
+        transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .tx-card:active { transform: scale(0.97); border-color: var(--accent); }
+
+    .tx-amount {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.5rem; font-weight: 900;
+        color: #ef4444; /* لون أحمر دلالة على الخصم/الإنفاق */
+    }
+
+    /* ── أزرار الإجراءات المصغرة ── */
+    .btn-tx {
+        flex: 1; padding: 12px; border-radius: 16px;
+        font-weight: 800; font-size: 11px; font-family: 'Cairo', sans-serif;
+        display: flex; justify-content: center; align-items: center; gap: 6px;
+        transition: 0.2s; border: 1px solid transparent; outline: none; cursor: pointer;
+    }
+    .btn-tx:active { transform: scale(0.95); }
+    
+    .btn-copy-tx { background: rgba(255,255,255,0.05); border-color: var(--border); color: var(--text-primary); }
+    .btn-copy-tx:active { background: var(--accent); color: #000; border-color: var(--accent); }
+    
+    .btn-share-tx { background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.2); color: #25D366; }
+
+    /* ── حالة الفراغ ── */
+    .empty-state {
+        padding: 60px 20px; text-align: center;
+        background: var(--bg-card); border: 1px dashed var(--border);
+        border-radius: 32px; margin-top: 20px;
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-clock-rotate-left text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">السجل المالي</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">تتبع مدفوعاتك وإيصالاتك الرقمية</p>
+    </div>
+
+    {% if purchases %}
+        {% set total_spent = purchases | map(attribute='amount_paid') | sum %}
+        
+        <div class="summary-card stagger-2">
+            <div class="text-center flex-1 relative z-10">
+                <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mb-1">العمليات</p>
+                <p class="text-2xl font-black text-[var(--text-primary)]">{{ purchases|length }}</p>
+            </div>
+            <div class="w-px h-12 bg-[var(--border-bright)] opacity-50 relative z-10"></div>
+            <div class="text-center flex-1 relative z-10">
+                <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mb-1">إجمالي الإنفاق</p>
+                <p class="text-2xl font-black text-[var(--accent)]" style="font-family: 'Cormorant Garamond', serif;">{{ total_spent | round(0) | int }} <span class="text-[9px] font-bold uppercase font-sans tracking-widest text-[var(--text-primary)]">ر.ي</span></p>
+            </div>
+        </div>
+
+        <div class="space-y-0 relative px-1">
+            {% for p in purchases %}
+            <div class="flex gap-4 stagger-3" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 rounded-full bg-[var(--bg-card)] border-2 border-[var(--accent)] flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)] z-10 shrink-0">
+                        <i class="fas fa-file-invoice-dollar text-[var(--accent)]"></i>
+                    </div>
+                    {% if not loop.last %}
+                    <div class="w-0.5 h-full bg-gradient-to-b from-[var(--accent)] to-transparent opacity-40 mt-2 mb-2"></div>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1 pb-8">
+                    <div class="tx-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-sm font-black text-[var(--text-primary)] mb-1">{{ p.package_name }}</h3>
+                                <p class="text-[10px] font-bold text-[var(--text-muted)] flex items-center gap-1.5">
+                                    <i class="far fa-calendar-alt opacity-50"></i> {{ p.purchased_at }}
+                                </p>
+                            </div>
+                            <div class="text-left">
+                                <span class="tx-amount">-{{ p.amount_paid | round(0) | int }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-black/20 rounded-xl p-3 mb-4 border border-white/5">
+                            <span class="text-[9px] text-[var(--text-muted)] font-mono tracking-widest">ID: #{{ p.id + 1000 }}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                                <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">مكتملة</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="copyPurchaseData('{{ p.package_name }}', '{{ p.amount_paid | round(0) | int }}', '{{ p.id + 1000 }}')" class="btn-tx btn-copy-tx" onmousedown="playGlassSound()">
+                                <i class="fas fa-copy text-sm"></i> نسخ الإيصال
+                            </button>
+                            <button onclick="sharePurchaseData('{{ p.package_name }}', '{{ p.amount_paid | round(0) | int }}')" class="btn-tx btn-share-tx" onmousedown="playGlassSound()">
+                                <i class="fab fa-whatsapp text-sm"></i> إرسال
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state stagger-2">
+            <div class="w-20 h-20 bg-[var(--accent-glow)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border-bright)]">
+                <i class="fas fa-receipt text-3xl text-[var(--accent)]"></i>
+            </div>
+            <h3 class="text-lg font-black text-[var(--text-primary)] mb-2">لا توجد سجلات مالية</h3>
+            <p class="text-[11px] text-[var(--text-muted)] leading-relaxed mb-8">عملياتك الشرائية ومدفوعاتك ستظهر هنا بتسلسل زمني بمجرد البدء.</p>
+            
+            <a href="/buy" onclick="playGlassSound()" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-dark)] text-white px-8 py-4 rounded-2xl font-black text-sm shadow-[0_10px_25px_var(--accent-glow)] active:scale-95 transition-transform">
+                <i class="fas fa-store"></i> ابدأ أول عملية شراء
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    // ── دالة نسخ الإيصال مع نظام التنبيهات الموحد ──
+    function copyPurchaseData(name, price, id) {
+        const text = `🧾 *إيصال إلكتروني - عندل ستار*\n\n🔹 *رقم العملية:* #${id}\n🔹 *الباقة:* ${name}\n🔹 *المبلغ المدفوع:* ${price} ر.ي\n\n✅ تمت العملية بنجاح.`;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            // استخدام التنبيه الموحد
+            const container = document.getElementById('toast-container');
+            if(container) {
+                const toast = document.createElement('div');
+                toast.className = 'global-toast success';
+                toast.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-check-circle text-emerald-400 text-lg"></i>
+                    </div>
+                    <div><p class="text-white text-sm font-bold">تم نسخ الإيصال بنجاح! 🧾</p></div>
+                `;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'toast-leave 0.5s forwards';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
+            } else {
+                alert('✅ تم نسخ الإيصال!');
+            }
+        });
+    }
+
+    // ── دالة مشاركة الإيصال عبر الواتساب ──
+    function sharePurchaseData(name, price) {
+        const msg = encodeURIComponent(`💳 *سجل مشترياتي من عندل ستار*\n\nالباقة: *${name}*\nالمبلغ المدفوع: *${price} ر.ي*\n\nتجربة إنترنت ولا أروع! 🚀`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+</script>
+
+{% endblock %}
+

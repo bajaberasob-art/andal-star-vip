@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+    .stagger-4 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both; }
+    .stagger-5 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both; }
+
+    /* ── هالة الأفاتار (Dynamic Halo) ── */
+    .avatar-wrapper {
+        position: relative; padding: 6px; border-radius: 50%; display: inline-block;
+        background: conic-gradient(from 0deg, var(--accent), transparent 60%);
+        animation: rotateGlow 4s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes rotateGlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    .avatar-inner {
+        width: 90px; height: 90px; border-radius: 50%;
+        background: var(--bg-card); backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; font-weight: 900; color: var(--text-primary);
+        border: 4px solid var(--bg-primary); position: relative; z-index: 2;
+        box-shadow: inset 0 0 20px var(--accent-glow);
+    }
+
+    /* ── بطاقات الإحصائيات (Bento Wallet) ── */
+    .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+    .bento-box {
+        background: linear-gradient(145deg, var(--bg-card) 0%, rgba(0,0,0,0.2) 100%);
+        border: 1px solid var(--border); border-radius: 24px; padding: 20px;
+        display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.3s;
+    }
+    .bento-box.main { grid-column: span 2; border-color: var(--accent); background: rgba(0,0,0,0.3); }
+    .bento-box.main::before {
+        content: ''; position: absolute; top: -50px; right: -50px; width: 120px; height: 120px;
+        background: radial-gradient(circle, var(--accent-glow), transparent 70%); pointer-events: none;
+    }
+
+    .b-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .b-val { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 900; color: var(--text-primary); line-height: 1; }
+
+    /* ── شريط الرتبة (Rank Progress) ── */
+    .rank-card {
+        background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 28px;
+        padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; overflow: hidden;
+    }
+    .level-progress-bar {
+        height: 8px; background: rgba(0,0,0,0.3); border-radius: 10px;
+        overflow: hidden; margin-top: 16px; border: 1px solid var(--border); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .progress-fill {
+        height: 100%; box-shadow: 0 0 15px currentColor;
+        transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ── الحقول العائمة للأمان (Floating Inputs) ── */
+    .input-group { position: relative; margin-bottom: 16px; }
+    .input-float {
+        width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+        border-radius: 16px; padding: 20px 16px 8px 16px; color: var(--text-primary);
+        font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700;
+        outline: none; transition: 0.3s;
+    }
+    .input-float:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); background: rgba(0,0,0,0.5); }
+    .label-float {
+        position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+        color: var(--text-muted); font-size: 13px; font-weight: 700;
+        pointer-events: none; transition: 0.3s ease;
+    }
+    .input-float:focus ~ .label-float, .input-float:not(:placeholder-shown) ~ .label-float {
+        top: 12px; font-size: 9px; color: var(--accent);
+    }
+
+    /* ── الأزرار ── */
+    .btn-royal {
+        width: 100%; padding: 18px; border-radius: 16px; font-weight: 900; font-size: 14px;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff;
+        border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px var(--accent-glow);
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-royal:active { transform: scale(0.97); }
+
+    .btn-bio {
+        background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+    }
+    .btn-bio.unregistered {
+        background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="flex flex-col items-center mt-6 stagger-1">
+        <div class="avatar-wrapper" id="rank-glow">
+            <div class="avatar-inner">
+                {{ user.full_name[0].upper() }}
+            </div>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">{{ user.full_name }}</h1>
+        <div class="flex items-center gap-2 text-[var(--text-muted)] font-mono font-bold text-xs mt-1">
+            <i class="fas fa-phone-alt text-[10px] opacity-70"></i>
+            <span>{{ user.phone }}</span>
+        </div>
+    </div>
+
+    <div class="bento-grid stagger-2">
+        <div class="bento-box main">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="b-label">الرصيد المتاح</p>
+                    <p class="b-val text-[var(--accent)]">{{ user.balance | round(0) | int }} <span class="text-[12px] font-sans uppercase text-[var(--text-primary)]">ر.ي</span></p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-[var(--accent-glow)] flex items-center justify-center border border-[var(--accent)]">
+                    <i class="fas fa-wallet text-[var(--accent)] text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bento-box">
+            <p class="b-label">الديون</p>
+            <p class="b-val {% if user.debt > 0 %}text-red-400{% else %}text-[var(--text-primary)]{% endif %}">{{ user.debt | round(0) | int }}</p>
+        </div>
+        
+        <div class="bento-box">
+            <p class="b-label">الإنفاق الكلي</p>
+            <p class="b-val text-blue-400">{{ total_spent | round(0) | int }}</p>
+        </div>
+    </div>
+
+    <div class="rank-card mt-6 stagger-3">
+        <div class="flex justify-between items-center mb-1">
+            <div>
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest block mb-1">المستوى الحالي</span>
+                <span id="rank-label" class="text-2xl font-black"></span>
+            </div>
+            <div class="text-center">
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest block mb-1">النقاط</span>
+                <span class="text-xl font-black text-amber-400">{{ user.points }} <i class="fas fa-star text-[10px]"></i></span>
+            </div>
+        </div>
+
+        <div class="level-progress-bar">
+            <div id="rank-progress" class="progress-fill" style="width: 0%"></div>
+        </div>
+
+        <p id="rank-benefit" class="mt-4 text-[10px] font-bold text-[var(--text-muted)] leading-relaxed bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border)]"></p>
+
+        <button onclick="handleConvert()" class="w-full mt-4 bg-amber-400/10 border border-amber-400/30 text-amber-400 py-3 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-2 hover:bg-amber-400 hover:text-black">
+            <i class="fas fa-exchange-alt"></i> تحويل النقاط لرصيد مالي
+        </button>
+    </div>
+
+    <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mt-8 mb-4 px-2 stagger-4">مركز الأمان والخصوصية</h2>
+    
+    <div class="space-y-4 stagger-4">
+        
+        <div class="rank-card p-5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                        <i class="fas fa-fingerprint text-cyan-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-sm text-[var(--text-primary)]">الدخول الحيوي</h3>
+                        <p class="text-[9px] text-[var(--text-muted)] font-bold mt-0.5">FaceID / TouchID</p>
+                    </div>
+                </div>
+                
+                {% if has_fingerprint %}
+                <span class="bg-emerald-500/10 text-emerald-400 text-[9px] font-bold px-3 py-1 rounded-md border border-emerald-500/30">نشط <i class="fas fa-check-circle ml-1"></i></span>
+                {% else %}
+                <span class="bg-rose-500/10 text-rose-400 text-[9px] font-bold px-3 py-1 rounded-md border border-rose-500/30">غير نشط</span>
+                {% endif %}
+            </div>
+
+            <button onclick="registerBiometric()" id="bioRegBtn" class="btn-royal {% if has_fingerprint %}btn-bio{% else %}btn-bio unregistered{% endif %} w-full !py-3 !rounded-xl" onmousedown="playGlassSound()">
+                {% if has_fingerprint %}
+                <i class="fas fa-sync-alt"></i> تحديث بصمة الدخول
+                {% else %}
+                <i class="fas fa-plus-circle"></i> تفعيل الدخول بالبصمة
+                {% endif %}
+            </button>
+        </div>
+
+        <div class="rank-card p-5">
+            <h3 class="font-black text-sm text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <i class="fas fa-key text-[var(--accent)]"></i> تغيير كلمة المرور
+            </h3>
+            
+            <form method="POST" action="/change_password">
+                <div class="input-group">
+                    <input type="password" name="current_password" class="input-float" placeholder=" " required>
+                    <label class="label-float">كلمة المرور الحالية</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="new_password" class="input-float" placeholder=" " required>
+                    <label class="label-float">كلمة المرور الجديدة</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="confirm_password" class="input-float" placeholder=" " required>
+                    <label class="label-float">تأكيد الكلمة الجديدة</label>
+                </div>
+                
+                <button type="submit" class="btn-royal w-full !py-3 !rounded-xl mt-2" onmousedown="playGlassSound()">
+                    <i class="fas fa-shield-alt"></i> تحديث الحماية
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center stagger-5">
+        <a href="/logout" onclick="playGlassSound()" class="inline-flex items-center justify-center gap-2 text-red-500/70 hover:text-red-500 bg-red-500/5 hover:bg-red-500/10 px-6 py-3 rounded-full font-black text-xs transition-all border border-red-500/10">
+            <i class="fas fa-power-off"></i> تسجيل الخروج بأمان
+        </a>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+
+<script>
+    // ================== نظام الرتبة والمستوى المطور ==================
+    const userLevel = "{{ level }}".trim();
+    const rankConfig = {
+        "🥉 Bronze": { color: "#cd7f32", percent: "25%", benefit: "أنت في بداية الطريق! مكافأة +10% نقاط عند كل عملية شراء." },
+        "🥈 Silver": { color: "#c0c0c0", percent: "50%", benefit: "رائع! حساب فضي يمنحك +20% نقاط وأولوية في العروض." },
+        "🥇 Gold": { color: "#fbbf24", percent: "75%", benefit: "مستوى ذهبي! استمتع بخصم 5% مباشر ومكافأة +30% نقاط." },
+        "💎 Diamond": { color: "#38bdf8", percent: "100%", benefit: "أنت من ملوك النظام! خصم 10%، نقاط مضاعفة، ودعم VIP." }
+    };
+
+    function setupRank() {
+        const config = rankConfig[userLevel] || rankConfig["🥉 Bronze"];
+        const label = document.getElementById('rank-label');
+        const progress = document.getElementById('rank-progress');
+        const benefit = document.getElementById('rank-benefit');
+        const glow = document.getElementById('rank-glow');
+
+        label.textContent = userLevel;
+        label.style.color = config.color;
+        
+        // استخدام الألوان الديناميكية للـ CSS 
+        progress.style.width = config.percent;
+        progress.style.background = `linear-gradient(90deg, transparent, ${config.color})`;
+        progress.style.color = config.color; // Used for box-shadow currentColor
+
+        benefit.textContent = config.benefit;
+        
+        // تلوين الهالة
+        glow.style.background = `conic-gradient(from 0deg, ${config.color}, transparent 60%)`;
+        if(userLevel.includes("Diamond")) {
+            glow.style.boxShadow = `0 0 30px ${config.color}40`;
+        }
+    }
+
+    // ================== تحويل النقاط ==================
+    async function handleConvert() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        if (!confirm("سيتم تحويل كل 100 نقطة إلى 100 ريال يمني. هل أنت متأكد؟")) return;
+        
+        if(navigator.vibrate) navigator.vibrate(50);
+
+        try {
+            const res = await fetch("/convert_points", { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                alert("✨ تهانينا! " + data.message);
+                location.reload();
+            } else {
+                alert("⚠️ " + (data.message || "عذراً، رصيد نقاطك غير كافٍ للتحويل (الحد الأدنى 100)"));
+            }
+        } catch (e) {
+            alert("❌ خطأ في الاتصال بالخادم");
+        }
+    }
+
+    // ================== المعالجة الفائقة لتسجيل البصمة (النسخة الجذرية) ==================
+    async function registerBiometric() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        const btn = document.getElementById('bioRegBtn');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-cyan-400"></i> جاري الاتصال بالسيرفر...';
+        
+        try {
+            // 1. طلب التشفير من السيرفر
+            const resp = await fetch('/webauthn/register/begin', { method: 'POST' });
+
+            // طباعة الخطأ الحقيقي إذا انهار السيرفر
+            if(!resp.ok) {
+                const errText = await resp.text();
+                throw new Error(`خطأ من السيرفر (${resp.status}): ${errText}`);
+            }
+
+            const options = await resp.json();
+            if(options.error) throw new Error('السيرفر رفض الطلب: ' + options.error);
+
+            // 2. تفعيل حساس البصمة
+            btn.innerHTML = '<i class="fas fa-fingerprint text-cyan-400 animate-pulse"></i> يرجى تأكيد بصمتك الآن...';
+            const { startRegistration } = SimpleWebAuthnBrowser;
+            let attResp;
+            try {
+                attResp = await startRegistration(options);
+            } catch (err) {
+                if (err.name === 'NotAllowedError') throw new Error("تم الإلغاء أو لم تضع بصمتك");
+                if (err.name === 'NotSupportedError') throw new Error("متصفحك لا يدعم البصمة أو يحتاج HTTPS");
+                throw new Error("خطأ في الحساس: " + err.message);
+            }
+
+            // 3. إرسال البصمة للحفظ
+            btn.innerHTML = '<i class="fas fa-lock text-emerald-400"></i> جاري الحفظ والتشفير...';
+            const verificationResp = await fetch('/webauthn/register/complete', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(attResp),
+            });
+            
+            const verificationJSON = await verificationResp.json();
+            if (verificationJSON.success) {
+                if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                alert('🎉 تم تفعيل الدخول الحيوي بنجاح!');
+                location.reload();
+            } else {
+                throw new Error(verificationJSON.error || 'فشل التوثيق النهائي');
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('❌ تفاصيل المشكلة الحقيقية:\n\n' + error.message);
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', setupRank);
+</script>
+
+{% endblock %}
+

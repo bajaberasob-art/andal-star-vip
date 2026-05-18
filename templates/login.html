@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+    <title>عندل ستار | تسجيل الدخول VIP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at top, #0f172a, #020617);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            color: white;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .cyber-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
+        }
+
+        .premium-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        .input-float {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1.5px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.25rem 1rem 0.5rem 3rem;
+            color: white; font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .input-float:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+            outline: none;
+        }
+        .label-float {
+            position: absolute; right: 1rem; top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-size: 0.9rem; font-weight: 600;
+        }
+        .input-float:focus ~ .label-float,
+        .input-float:not(:placeholder-shown) ~ .label-float {
+            top: 0.5rem; right: 1rem;
+            font-size: 0.65rem;
+            color: #0ea5e9;
+            transform: translateY(0);
+        }
+        .icon-float {
+            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+            color: rgba(255,255,255,0.2); transition: 0.3s;
+        }
+        .input-float:focus ~ .icon-float { color: #0ea5e9; }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px rgba(15, 23, 42, 0.9) inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .btn-aurora {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            transition: all 0.4s ease;
+        }
+        .btn-aurora::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .btn-aurora:hover::before { opacity: 1; }
+        .btn-aurora:hover, .btn-aurora:active {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+        }
+        .btn-aurora span, .btn-aurora i { position: relative; z-index: 10; }
+
+        .btn-bio {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-bio:hover, .btn-bio:active {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.3);
+            box-shadow: inset 0 0 15px rgba(14, 165, 233, 0.2);
+            transform: scale(0.98);
+        }
+
+        #smartToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%);
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-right: 4px solid #f43f5e;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 100;
+        }
+        #smartToast.show { transform: translateX(-50%) translateY(0); }
+
+        #bioOverlay {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(15px); z-index: 999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        #bioOverlay.active { opacity: 1; pointer-events: auto; }
+
+        .fingerprint-scanner {
+            position: relative; width: 100px; height: 100px;
+            color: rgba(14, 165, 233, 0.3); font-size: 100px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .scan-line {
+            position: absolute; top: 0; left: -10%; width: 120%; height: 4px;
+            background: #0ea5e9; border-radius: 50%;
+            box-shadow: 0 0 20px #0ea5e9, 0 0 40px #0ea5e9;
+            animation: scan 1.5s ease-in-out infinite alternate;
+            display: none;
+        }
+        .fingerprint-scanner.scanning { color: rgba(14, 165, 233, 1); filter: drop-shadow(0 0 15px rgba(14,165,233,0.6)); }
+        .fingerprint-scanner.scanning .scan-line { display: block; }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* ── تنسيقات PWA ── */
+        .glass-pwa {
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(14, 165, 233, 0.3); box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <div id="bioOverlay" class="flex flex-col items-center justify-center">
+        <div class="fingerprint-scanner" id="scannerIcon">
+            <i class="fas fa-fingerprint"></i>
+            <div class="scan-line"></div>
+        </div>
+        <h3 id="bioText" class="mt-8 text-xl font-black text-white tracking-widest animate-pulse">جاري التحضير...</h3>
+        <button onclick="closeBio()" class="mt-12 text-gray-500 hover:text-white transition-colors text-sm font-bold border-b border-gray-500 hover:border-white pb-1">إلغاء</button>
+    </div>
+
+    <div id="smartToast" class="flex items-center gap-4 px-6 py-4 rounded-2xl w-[90%] max-w-sm">
+        <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0">
+            <i class="fas fa-exclamation-triangle text-rose-500 text-lg"></i>
+        </div>
+        <div>
+            <h4 class="text-white font-bold text-sm">تنبيه النظام</h4>
+            <p id="toastMessage" class="text-white/60 text-xs mt-1 leading-relaxed"></p>
+        </div>
+    </div>
+
+    <div class="w-full max-w-md p-5 relative z-10 animate__animated animate__fadeIn">
+        <div class="premium-card rounded-[2rem] p-7 sm:p-9 relative overflow-hidden">
+            <div class="text-center mb-10">
+                <div class="inline-block relative mb-3">
+                    <div class="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-white/10 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-[0_0_20px_rgba(14,165,233,0.2)]">
+                        <i class="fas fa-star text-3xl text-transparent bg-clip-text bg-gradient-to-tr from-cyan-400 to-sky-300 drop-shadow-lg"></i>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight">عندل ستار</h1>
+                <p class="text-sky-400/80 text-[10px] font-bold mt-2 uppercase tracking-[0.3em]">تسجيل الدخول للنظام</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 animate__animated animate__shakeX">
+                    <i class="fas fa-shield-alt text-rose-400 mt-1"></i>
+                    <span class="text-rose-200 text-sm font-semibold">{{ message }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" id="loginForm">
+                <div class="input-group">
+                    <input type="text" name="phone" id="phoneInput" class="input-float font-bold tracking-wider" placeholder=" " required dir="ltr" autocomplete="username" style="text-align: right;">
+                    <label class="label-float">أدخل رقم الجوال أو اسم المستخدم</label>
+                    <i class="fas fa-user icon-float"></i>
+                </div>
+
+                <div class="input-group mb-6">
+                    <input type="password" name="password" id="pass" class="input-float pr-4 pl-12" placeholder=" " autocomplete="current-password">
+                    <label class="label-float">كلمة المرور (اختياري للبصمة)</label>
+                    <button type="button" onclick="togglePass()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-sky-400 transition-colors z-10 p-2">
+                        <i id="eyeIcon" class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <button type="button" onclick="triggerRealBiometric()" class="btn-bio w-full py-3.5 rounded-xl flex items-center justify-center gap-3 text-white/80 font-bold mb-4 shadow-[0_0_15px_rgba(14,165,233,0.1)]">
+                    <i class="fas fa-fingerprint text-xl text-sky-400 animate-pulse"></i>
+                    <span>الدخول السريع بالبصمة</span>
+                </button>
+
+                <button type="submit" id="submitBtn" class="btn-aurora w-full text-white font-black py-4 rounded-xl text-lg flex items-center justify-center gap-3">
+                    <span>دخول آمن</span>
+                    <i class="fas fa-sign-in-alt text-sm"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-xs sm:text-sm font-bold">
+                <a href="/register" class="text-sky-400 hover:text-sky-300 transition-colors">إنشاء حساب جديد</a>
+                <a href="#" onclick="showToast('ميزة استعادة كلمة المرور ستتوفر قريباً.')" class="text-white/40 hover:text-white transition-colors">نسيت الرمز؟</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="pwaInstallBanner" class="hidden fixed bottom-4 left-4 right-4 z-[500] glass-pwa rounded-2xl p-4 flex items-center justify-between animate__animated animate__fadeInUp">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-sky-500/20 flex items-center justify-center border border-sky-500/30">
+                <i class="fas fa-mobile-alt text-sky-400 text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-black text-white">ثبّت التطبيق الآن</p>
+                <p class="text-[10px] text-white/60 font-bold">لتجربة أسرع ودخول آمن بالبصمة</p>
+            </div>
+        </div>
+        <button onclick="installPWA()" class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-5 py-2.5 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-transform">
+            تثبيت
+        </button>
+    </div>
+
+    <div id="iosInstallModal" class="hidden fixed inset-0 z-[6000] bg-black/80 backdrop-blur-md flex items-end justify-center pb-8 px-4" onclick="closeIosModal(event)">
+        <div class="bg-[#0f172a] border border-white/10 rounded-[32px] p-6 w-full max-w-sm text-center relative animate__animated animate__slideInUp shadow-2xl" onclick="event.stopPropagation()">
+            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-6"></div>
+            
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 mb-4">
+                <i class="fab fa-apple text-3xl text-white"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-white mb-2">تثبيت التطبيق على آيفون</h3>
+            <p class="text-xs text-white/60 mb-6 leading-relaxed px-4">نظام iOS يتطلب تثبيت التطبيق يدوياً. اتبع الخطوتين:</p>
+            
+            <div class="space-y-3 text-right">
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <i class="fas fa-arrow-up-from-bracket text-sky-400 text-xl w-6 text-center"></i>
+                    <p class="text-sm text-white font-bold">1. اضغط على زر <span class="text-sky-400 font-black">المشاركة</span> أسفل المتصفح</p>
+                </div>
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <i class="far fa-plus-square text-sky-400 text-xl w-6 text-center"></i>
+                    <p class="text-sm text-white font-bold">2. اختر <span class="text-sky-400 font-black">إضافة للشاشة الرئيسية</span></p>
+                </div>
+            </div>
+            
+            <button onclick="document.getElementById('iosInstallModal').classList.add('hidden')" class="w-full mt-8 bg-white/10 hover:bg-white/20 text-white py-4 rounded-2xl font-black text-sm transition-colors">
+                حسناً، فهمت
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+    <script>
+        // ── تحميل الرقم المحفوظ ──
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedPhone = localStorage.getItem("andal_saved_phone");
+            if(savedPhone) {
+                document.getElementById("phoneInput").value = savedPhone;
+            }
+        });
+
+        // ── إظهار/إخفاء الباسورد ──
+        function togglePass() {
+            const pass = document.getElementById("pass");
+            const icon = document.getElementById("eyeIcon");
+            if (pass.type === "password") {
+                pass.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+                icon.classList.add("text-sky-400");
+            } else {
+                pass.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+                icon.classList.remove("text-sky-400");
+            }
+        }
+
+        // ── التنبيهات ──
+        function showToast(message) {
+            const toast = document.getElementById('smartToast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.add('show');
+            if (navigator.vibrate) navigator.vibrate(200);
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+
+        // ── إغلاق نافذة البصمة ──
+        function closeBio() {
+            const overlay = document.getElementById('bioOverlay');
+            const scanner = document.getElementById('scannerIcon');
+            const text = document.getElementById('bioText');
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                scanner.classList.remove('scanning');
+                scanner.style.color = "rgba(14, 165, 233, 0.3)";
+                text.innerText = "جاري التحضير...";
+                text.classList.replace("text-rose-500", "text-white");
+                text.classList.replace("text-emerald-400", "text-white");
+                text.classList.replace("text-sky-400", "text-white");
+            }, 500);
+        }
+
+        // ── المصادقة بالبصمة (WebAuthn) ──
+        async function triggerRealBiometric() {
+            const phoneField = document.getElementById("phoneInput");
+            const phone = phoneField.value.trim();
+
+            if (!phone) {
+                showToast("الرجاء كتابة رقم الجوال لأول مرة لكي نتعرف على بصمتك.");
+                phoneField.focus();
+                phoneField.parentElement.classList.add("animate__animated", "animate__shakeX");
+                phoneField.style.borderColor = "#f43f5e";
+                setTimeout(() => {
+                    phoneField.parentElement.classList.remove("animate__animated", "animate__shakeX");
+                    phoneField.style.borderColor = "rgba(255, 255, 255, 0.05)";
+                }, 2000);
+                return;
+            }
+
+            const overlay = document.getElementById('bioOverlay');
+            const scanner = document.getElementById('scannerIcon');
+            const text = document.getElementById('bioText');
+
+            overlay.classList.add('active');
+            scanner.classList.add('scanning');
+            text.innerText = "جاري الاتصال بالسيرفر...";
+            text.classList.replace("text-white", "text-sky-400");
+
+            try {
+                const resp = await fetch('/webauthn/login/begin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone })
+                });
+
+                if (!resp.ok) {
+                    const errText = await resp.text();
+                    throw new Error(`خطأ من السيرفر (${resp.status}): ${errText}`);
+                }
+
+                const options = await resp.json();
+                if (options.error) {
+                    throw new Error(options.error);
+                }
+
+                text.innerText = "يرجى تأكيد بصمتك في الجهاز الآن...";
+
+                const { startAuthentication } = SimpleWebAuthnBrowser;
+                let asseResp;
+                try {
+                    asseResp = await startAuthentication(options);
+                } catch (err) {
+                    if (err.name === 'NotAllowedError') throw new Error("تم الإلغاء بواسطة المستخدم");
+                    throw new Error("فشلت قراءة البصمة: " + err.message);
+                }
+
+                text.innerText = "جاري مطابقة الهوية...";
+
+                const verificationResp = await fetch('/webauthn/login/complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(asseResp)
+                });
+
+                if (!verificationResp.ok) {
+                    const errText = await verificationResp.text();
+                    throw new Error(`خطأ في التوثيق (${verificationResp.status}): ${errText}`);
+                }
+
+                const verificationJSON = await verificationResp.json();
+
+                if (verificationJSON.success) {
+                    text.innerText = "تمت المصادقة بنجاح! جاري الدخول...";
+                    text.classList.replace("text-sky-400", "text-emerald-400");
+                    scanner.style.color = "#34d399";
+                    scanner.classList.remove('scanning');
+                    if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+                    localStorage.setItem("andal_saved_phone", phone);
+                    setTimeout(() => { window.location.href = verificationJSON.redirect; }, 1000);
+                } else {
+                    throw new Error(verificationJSON.error || "المصادقة فشلت (بصمة خاطئة)");
+                }
+
+            } catch (error) {
+                console.error(error);
+                scanner.classList.remove('scanning');
+                text.innerText = "فشلت العملية!";
+                text.classList.replace("text-sky-400", "text-rose-500");
+                scanner.style.color = "#f43f5e";
+                alert('❌ تفاصيل المشكلة:\n\n' + error.message);
+                setTimeout(() => { closeBio(); }, 1000);
+            }
+        }
+
+        // ── الدخول العادي بالرقم السري ──
+        document.getElementById("loginForm").onsubmit = function(e) {
+            const phoneField = document.getElementById("phoneInput");
+            const passField = document.getElementById("pass");
+            const phone = phoneField.value.trim();
+            const btn = document.getElementById("submitBtn");
+
+            if(!passField.value) {
+                e.preventDefault();
+                showToast("الرجاء إدخال كلمة المرور أو استخدام زر البصمة.");
+                passField.focus();
+                return false;
+            }
+
+            if(phone.toLowerCase() !== "admin") {
+                const phoneRegex = /^(77|78|73|70)\d{7}$/;
+                if(!phoneRegex.test(phone)) {
+                    e.preventDefault();
+                    showToast("البيانات غير صحيحة! أدخل 'admin' أو رقم جوال يمني صالح.");
+                    phoneField.parentElement.classList.add("animate__animated", "animate__shakeX");
+                    phoneField.style.borderColor = "#f43f5e";
+                    setTimeout(() => {
+                        phoneField.parentElement.classList.remove("animate__animated", "animate__shakeX");
+                        phoneField.style.borderColor = "rgba(255, 255, 255, 0.05)";
+                    }, 1000);
+                    return false;
+                }
+            }
+
+            localStorage.setItem("andal_saved_phone", phone);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>جاري المصادقة...</span>';
+        };
+
+        // ================== منطق تثبيت التطبيق (PWA Logic) ==================
+        let deferredPrompt;
+        const pwaBanner = document.getElementById('pwaInstallBanner');
+        const iosModal = document.getElementById('iosInstallModal');
+
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (!isStandalone) {
+            if (isIOS) {
+                setTimeout(() => pwaBanner.classList.remove('hidden'), 1500);
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!isStandalone) {
+                setTimeout(() => pwaBanner.classList.remove('hidden'), 1500);
+            }
+        });
+
+        function installPWA() {
+            if(navigator.vibrate) navigator.vibrate(50);
+            if (isIOS) {
+                iosModal.classList.remove('hidden');
+            } else if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        pwaBanner.classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert("يرجى الضغط على 'إضافة للشاشة الرئيسية' (Add to Home Screen) من إعدادات متصفحك أعلى الشاشة.");
+            }
+        }
+
+        function closeIosModal(e) {
+            if(e.target === iosModal) iosModal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
+

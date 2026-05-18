@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+    .stagger-4 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both; }
+
+    /* ── بطاقة العميل العلوية ── */
+    .profile-header {
+        background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0,0,0,0.3) 100%);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-bright); border-radius: 32px;
+        padding: 24px; position: relative; overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin-bottom: 24px;
+    }
+    .profile-header::before {
+        content: ''; position: absolute; top: -50px; left: -50px;
+        width: 150px; height: 150px; background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+        pointer-events: none;
+    }
+    
+    .p-avatar {
+        width: 64px; height: 64px; border-radius: 20px; shrink-0;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900;
+        box-shadow: 0 10px 20px var(--accent-glow); text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .stat-badge {
+        background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+        border-radius: 16px; padding: 12px 16px; text-align: center; flex: 1;
+    }
+    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 900; line-height: 1; margin-top: 4px; }
+
+    /* ── شريط العمليات ── */
+    .tx-card {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: 20px; padding: 16px; margin-bottom: 12px;
+        display: flex; justify-content: space-between; align-items: center;
+        transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .tx-card:hover { border-color: var(--accent); transform: translateX(-4px); }
+    
+    .tx-icon {
+        width: 44px; height: 44px; border-radius: 14px; shrink-0;
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .icon-money { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .icon-box { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+    
+    .tx-amount { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 900; }
+
+    /* ── تنسيقات الطباعة ── */
+    @media print {
+        body { background: white !important; color: black !important; }
+        .nav-bar, .royal-header, .print-hide, .orb, .royal-grid { display: none !important; }
+        .profile-header, .tx-card { box-shadow: none !important; border: 1px solid #ddd !important; background: transparent !important; }
+        .stat-val, .tx-amount, h1, h2, h3, p, span { color: black !important; text-shadow: none !important; }
+        .text-emerald-400 { color: green !important; }
+        .text-rose-400 { color: red !important; }
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="flex items-center justify-between mb-6 stagger-1 print-hide">
+        <a href="/admin/customers" onclick="playGlassSound()" class="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold text-xs bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full">
+            <i class="fas fa-arrow-right"></i>
+            <span>إدارة الزبائن</span>
+        </a>
+        <button onclick="window.print()" class="inline-flex items-center gap-2 bg-[var(--accent-glow)] text-[var(--text-primary)] border border-[var(--accent)] px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 hover:bg-[var(--accent)] hover:text-black">
+            <i class="fas fa-print"></i> طباعة الكشف
+        </button>
+    </div>
+
+    <div class="profile-header stagger-2">
+        <div class="flex items-center gap-4 border-b border-[var(--border-bright)] pb-4 mb-4">
+            <div class="p-avatar">{{ user.full_name[0] }}</div>
+            <div>
+                <h1 class="text-xl font-black text-[var(--text-primary)] mb-1">{{ user.full_name }}</h1>
+                <p class="text-xs text-[var(--text-muted)] font-mono tracking-widest font-bold">
+                    <i class="fas fa-phone-alt opacity-50 ml-1"></i> {{ user.phone }}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <div class="stat-badge">
+                <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-widest">الرصيد الحالي</p>
+                <p class="stat-val text-emerald-400">{{ user.balance | round(0) | int }}</p>
+            </div>
+            <div class="stat-badge">
+                <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-widest">الدين المتراكم</p>
+                <p class="stat-val text-rose-400">{{ user.debt | round(0) | int }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 stagger-3">
+        
+        <div>
+            <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <i class="fas fa-exchange-alt text-[var(--accent)]"></i> سجل الحركات المالية
+            </h2>
+            
+            <div class="space-y-0">
+                {% for t in transactions %}
+                <div class="tx-card">
+                    <div class="flex items-center gap-3">
+                        <div class="tx-icon icon-money"><i class="fas fa-money-bill-transfer"></i></div>
+                        <div>
+                            <p class="text-sm font-black text-[var(--text-primary)]">{{ t.transaction_type }}</p>
+                            <p class="text-[10px] text-[var(--text-muted)] font-bold mt-1 tracking-wider"><i class="far fa-clock opacity-50"></i> {{ t.created_at }}</p>
+                        </div>
+                    </div>
+                    <div class="text-left shrink-0">
+                        <span class="tx-amount {% if t.amount > 0 %}text-emerald-400{% else %}text-rose-400{% endif %}">
+                            {{ '+' if t.amount > 0 else '' }}{{ t.amount | round(0) | int }}
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-8 border border-dashed border-[var(--border)] rounded-[20px] bg-[var(--bg-card)]">
+                    <i class="fas fa-receipt text-2xl text-[var(--text-muted)] opacity-30 mb-2"></i>
+                    <p class="text-[10px] font-bold text-[var(--text-muted)]">لا توجد حركات مالية مسجلة</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 flex items-center gap-2 mt-6 lg:mt-0">
+                <i class="fas fa-shopping-bag text-[var(--accent)]"></i> سجل شراء الباقات
+            </h2>
+            
+            <div class="space-y-0">
+                {% for p in purchases %}
+                <div class="tx-card">
+                    <div class="flex items-center gap-3">
+                        <div class="tx-icon icon-box"><i class="fas fa-box-open"></i></div>
+                        <div>
+                            <p class="text-sm font-black text-[var(--text-primary)]">{{ p.package_name }}</p>
+                            <p class="text-[10px] text-[var(--text-muted)] font-bold mt-1 tracking-wider"><i class="far fa-calendar-check opacity-50"></i> {{ p.purchased_at }}</p>
+                        </div>
+                    </div>
+                    <div class="text-left shrink-0">
+                        <span class="tx-amount text-rose-400">-{{ p.amount_paid | round(0) | int }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-8 border border-dashed border-[var(--border)] rounded-[20px] bg-[var(--bg-card)]">
+                    <i class="fas fa-box text-2xl text-[var(--text-muted)] opacity-30 mb-2"></i>
+                    <p class="text-[10px] font-bold text-[var(--text-muted)]">لم يقم بشراء أي باقة حتى الآن</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

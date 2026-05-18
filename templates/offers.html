@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── شريط الفلاتر والبحث ── */
+    .filter-scroll {
+        display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
+        -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    
+    .filter-pill {
+        flex-shrink: 0; padding: 10px 20px; border-radius: 20px;
+        background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+        color: var(--text-muted); font-size: 12px; font-weight: 800; cursor: pointer;
+        transition: all 0.3s;
+    }
+    .filter-pill.active {
+        background: var(--accent); color: var(--bg-primary);
+        border-color: var(--accent); box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    
+    .search-input {
+        width: 100%; background: var(--bg-card); border: 1px solid var(--border);
+        color: var(--text-primary); border-radius: 20px; padding: 16px 45px 16px 16px;
+        font-size: 13px; outline: none; transition: 0.3s;
+    }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+
+    /* ── بطاقة العرض الترويجي (Promo Card) ── */
+    .promo-card {
+        background: linear-gradient(180deg, var(--bg-card) 0%, rgba(0,0,0,0.2) 100%);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-bright);
+        border-radius: 32px; padding: 32px 24px; text-align: center;
+        position: relative; overflow: hidden; transition: 0.3s;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .promo-card::before {
+        content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+        width: 150px; height: 150px; background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+        opacity: 0.6; pointer-events: none;
+    }
+
+    .exclusive-badge {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+        background: var(--accent); color: var(--bg-primary);
+        font-size: 9px; font-weight: 900; padding: 4px 16px;
+        border-radius: 0 0 12px 12px; letter-spacing: 0.2em; text-transform: uppercase;
+        box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .discount-circle {
+        width: 110px; height: 110px; margin: 24px auto; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
+        border: 2px dashed var(--accent); display: flex; flex-direction: column;
+        align-items: center; justify-content: center; position: relative;
+        box-shadow: inset 0 0 20px var(--accent-glow);
+    }
+    .discount-value {
+        font-family: 'Cormorant Garamond', serif; font-size: 3rem;
+        font-weight: 900; color: var(--text-primary); line-height: 1;
+        text-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-buy-promo {
+        width: 100%; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 15px;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark));
+        color: #fff; border: none; cursor: pointer; transition: 0.2s;
+        box-shadow: 0 10px 25px var(--accent-glow); display: flex; align-items: center; justify-content: center; gap: 8px;
+        text-decoration: none;
+    }
+    .btn-buy-promo:active { transform: scale(0.96); }
+
+    /* ── حالة الفراغ ── */
+    .empty-state {
+        padding: 60px 20px; text-align: center;
+        background: var(--bg-card); border: 1px dashed var(--border);
+        border-radius: 32px;
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-fire-flame-curved text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">عروض حصرية</h1>
+        <p class="text-xs text-[var(--accent)] mt-1 font-bold tracking-widest uppercase opacity-80">اقتنص الفرصة الآن</p>
+    </div>
+
+    <div class="stagger-2 mb-8">
+        <div class="relative mb-4">
+            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-[var(--accent)] opacity-60"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن عرض..." onkeyup="filterOffers()">
+        </div>
+        
+        <div class="filter-scroll" id="filters">
+            <button onclick="setFilter('all', this)" class="filter-pill active">الكل</button>
+            <button onclick="setFilter('يومية', this)" class="filter-pill">يومي</button>
+            <button onclick="setFilter('أسبوعية', this)" class="filter-pill">أسبوعي</button>
+            <button onclick="setFilter('شهرية', this)" class="filter-pill">شهري</button>
+            <button onclick="setFilter('high', this)" class="filter-pill border-[var(--accent)] text-[var(--accent)]">🔥 أقوى خصم</button>
+        </div>
+    </div>
+
+    <div id="offersContainer" class="space-y-6 stagger-3">
+        {% for offer in offers %}
+        <div class="promo-card offer-item" data-type="{{ offer.package.name }}" data-discount="{{ offer.discount }}">
+            
+            <div class="exclusive-badge">Exclusive</div>
+            
+            <h2 class="text-xl font-black text-[var(--text-primary)] mt-4">{{ offer.title }}</h2>
+            <p class="text-xs font-bold text-[var(--accent)] opacity-80 mt-1"><i class="fas fa-magic ml-1"></i> {{ offer.slogan }}</p>
+
+            <div class="discount-circle">
+                <span class="discount-value">{{ offer.discount }}%</span>
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">خصم</span>
+            </div>
+
+            <p class="text-[11px] font-bold text-[var(--text-muted)] mb-6">
+                احصل على هذا الخصم عند شرائك <span class="text-[var(--text-primary)] border-b border-[var(--accent)] pb-0.5">{{ offer.package.name }}</span>
+            </p>
+
+            <a href="/buy/{{ offer.package_id }}" onclick="playGlassSound()" class="btn-buy-promo">
+                <i class="fas fa-shopping-cart"></i> شراء العرض الآن
+            </a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-ticket-alt text-4xl text-[var(--text-muted)] opacity-50 mb-4 block"></i>
+            <h3 class="text-lg font-black text-[var(--text-primary)] mb-2">ترقب عروضنا القادمة</h3>
+            <p class="text-[11px] text-[var(--text-muted)]">نقوم بتجهيز خصومات قوية جداً. عد لزيارة هذه الصفحة لاحقاً!</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    let currentFilter = 'all';
+
+    function setFilter(type, btn) {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        
+        // تحديث الأزرار
+        document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        currentFilter = type;
+        filterOffers();
+    }
+
+    function filterOffers() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.offer-item');
+        
+        cards.forEach(card => {
+            const cardType = card.dataset.type.toLowerCase();
+            const discount = parseInt(card.dataset.discount);
+            const title = card.querySelector('h2').textContent.toLowerCase();
+
+            // الفلترة حسب النوع
+            let typeMatch = false;
+            if (currentFilter === 'all') typeMatch = true;
+            else if (currentFilter === 'high') typeMatch = discount >= 20;
+            else typeMatch = cardType.includes(currentFilter);
+
+            // الفلترة حسب البحث
+            let searchMatch = title.includes(term);
+
+            // تطبيق الفلتر وإعادة تفعيل الأنيميشن
+            if (typeMatch && searchMatch) {
+                card.style.display = 'block';
+                card.classList.remove('stagger-3');
+                // إجبار المتصفح على إعادة قراءة العنصر لتشغيل الأنيميشن من جديد
+                void card.offsetWidth; 
+                card.style.animation = 'fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+{% endblock %}
+

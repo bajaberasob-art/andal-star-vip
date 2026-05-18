@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── تنسيق الحقول ── */
+    .input-group { margin-bottom: 24px; }
+    .input-label {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 11px; font-weight: 800; color: var(--text-muted);
+        margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    
+    .input-wrap { position: relative; }
+    .select-icon {
+        position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+        color: var(--accent); opacity: 0.7; pointer-events: none;
+    }
+    
+    .input-control {
+        width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+        border-radius: 16px; padding: 18px 20px; color: var(--text-primary);
+        font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 700;
+        outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        appearance: none; cursor: pointer;
+    }
+    
+    .input-wrap:focus-within .input-control {
+        border-color: var(--accent); background: rgba(0,0,0,0.4);
+        box-shadow: 0 0 0 3px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    /* ── منطقة اليوزرات (Terminal Textarea) ── */
+    .terminal-area {
+        width: 100%; min-height: 250px; background: rgba(0,0,0,0.4);
+        border: 1px solid var(--border-bright); border-radius: 20px;
+        padding: 20px; color: var(--text-primary); font-family: monospace; font-size: 16px;
+        outline: none; transition: 0.3s; resize: vertical; line-height: 1.6;
+        box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .terminal-area::placeholder { color: var(--text-muted); opacity: 0.3; font-family: 'Cairo', sans-serif; }
+    .terminal-area:focus { border-color: var(--accent); box-shadow: inset 0 5px 15px rgba(0,0,0,0.3), 0 0 0 2px var(--accent-glow); }
+
+    .counter-badge {
+        background: rgba(255,255,255,0.05); border: 1px solid var(--border-bright);
+        padding: 4px 12px; border-radius: 10px; display: flex; items-center; gap: 8px;
+    }
+
+    /* ── أزرار التحكم ── */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .btn-action {
+        padding: 14px; border-radius: 16px; font-weight: 800; font-size: 12px;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        transition: 0.2s; border: 1px solid var(--border); cursor: pointer; outline: none;
+    }
+    .btn-action:active { transform: scale(0.95); }
+    .btn-magic { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+    .btn-clear { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+
+    .btn-submit {
+        width: 100%; padding: 20px; border-radius: 20px; font-weight: 800; font-size: 16px;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff;
+        border: none; cursor: pointer; transition: 0.2s;
+        box-shadow: 0 10px 25px var(--accent-glow); display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="mb-6 stagger-1">
+        <a href="/admin/stock" onclick="playGlassSound()" class="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold text-xs bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full">
+            <i class="fas fa-arrow-right"></i>
+            <span>إدارة المخزون</span>
+        </a>
+    </div>
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-database text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">تعبئة الكروت</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">ضخ بيانات اليوزرات للمخزون بسرعة عالية</p>
+    </div>
+
+    <div class="glass-royal rounded-[32px] p-6 sm:p-8 stagger-2 relative max-w-lg mx-auto overflow-hidden">
+        <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-[var(--accent-glow)] rounded-full blur-3xl pointer-events-none"></div>
+
+        <form method="POST" id="voucherForm" class="relative z-10">
+
+            <div class="input-group">
+                <label class="input-label">
+                    <span><i class="fas fa-box-open opacity-50 ml-1"></i> الفئة المستهدفة</span>
+                </label>
+                <div class="input-wrap">
+                    <select name="package_id" required class="input-control">
+                        {% for p in packages %}
+                        <option value="{{ p.id }}" style="background: var(--bg-primary);">{{ p.name }} - {{ p.price | round(0) | int }} ر.ي</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down select-icon"></i>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="input-label">
+                    <span><i class="fas fa-terminal opacity-50 ml-1"></i> قائمة اليوزرات</span>
+                    <div class="counter-badge">
+                        <span class="opacity-50">العدد:</span>
+                        <span id="count" class="text-[var(--accent)] font-black text-sm">0</span>
+                    </div>
+                </div>
+                
+                <textarea name="usernames" id="usernames" required class="terminal-area" placeholder="أدخل كل يوزر في سطر مستقل هنا...&#10;user1&#10;user2&#10;user3"></textarea>
+            </div>
+
+            <div class="action-grid">
+                <button type="button" onclick="addExamples()" class="btn-action btn-magic" onmousedown="playGlassSound()">
+                    <i class="fas fa-wand-sparkles text-[var(--accent)]"></i> تزييف ذكي (للتجربة)
+                </button>
+                <button type="button" onclick="clearTextarea()" class="btn-action btn-clear" onmousedown="playGlassSound()">
+                    <i class="fas fa-eraser"></i> تصفير القائمة
+                </button>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit" onmousedown="playGlassSound()">
+                <i class="fas fa-cloud-upload-alt"></i> اعتماد الكروت بالنظام
+            </button>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    const area = document.getElementById('usernames');
+    const countEl = document.getElementById('count');
+
+    // ── تحديث العداد ديناميكياً ──
+    function updateCount() {
+        // فلترة الأسطر الفارغة
+        const lines = area.value.split('\n').filter(line => line.trim() !== '');
+        
+        if (parseInt(countEl.textContent) !== lines.length) {
+            countEl.style.transform = 'scale(1.2)';
+            setTimeout(() => countEl.style.transform = 'scale(1)', 200);
+        }
+        countEl.textContent = lines.length;
+    }
+
+    area.addEventListener('input', updateCount);
+
+    // ── إضافة أمثلة ──
+    function addExamples() {
+        const randomID = () => Math.floor(1000 + Math.random() * 9000);
+        const examples = `user-${randomID()}\nuser-${randomID()}\nuser-${randomID()}`;
+        area.value += (area.value ? '\n' : '') + examples;
+        updateCount();
+        area.scrollTop = area.scrollHeight; // النزول لأسفل الصندوق
+    }
+
+    // ── تصفير الصندوق ──
+    function clearTextarea() {
+        if (area.value === '') return;
+        if(confirm('سيتم مسح كافة اليوزرات المدخلة، هل أنت متأكد؟')) {
+            if(navigator.vibrate) navigator.vibrate(50);
+            area.value = '';
+            updateCount();
+            area.focus();
+        }
+    }
+
+    // ── منع الإرسال المزدوج ──
+    document.getElementById('voucherForm').onsubmit = function() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري رفع الكروت...';
+    };
+
+    // تهيئة أولية
+    updateCount();
+</script>
+
+{% endblock %}
+

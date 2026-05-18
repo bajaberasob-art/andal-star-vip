@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" style="background-color: #06050a;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="عندل ستار">
+    <meta name="theme-color" content="#06050a" id="meta-theme-color">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+    <meta property="og:title" content="شبكة عندل ستار VIP ⌬">
+    <meta property="og:description" content="بوابتك الفاخرة لإدارة اشتراكات الإنترنت، شراء الكروت، وتحويل الرصيد بلمسة زر واحدة.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512.png', _external=True) }}">
+    <meta property="og:site_name" content="Andal Star VIP">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="شبكة عندل ستار VIP ⌬">
+    <meta name="twitter:description" content="بوابتك الفاخرة لإدارة اشتراكات الإنترنت، شراء الكروت، وتحويل الرصيد بلمسة زر واحدة.">
+    <meta name="twitter:image" content="{{ url_for('static', filename='icons/icon-512.png', _external=True) }}">
+    <title>{% block title %}عندل ستار | النظام الملكي{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        const savedTheme = localStorage.getItem('andal-theme');
+        if(savedTheme === '6') document.documentElement.style.backgroundColor = '#f5f0e8';
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { gold: '#c9a84c' },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'shimmer': 'shimmer 3s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ═══════════════════════════════════════════════
+           نظام الثيمات الملكية الستة
+        ═══════════════════════════════════════════════ */
+        body.theme-1 { --bg-primary: #06050a; --bg-secondary: #0e0d16; --bg-card: rgba(18, 16, 28, 0.8); --accent: #c9a84c; --accent-light: #e8c96a; --accent-dark: #9a7a2e; --accent-glow: rgba(201, 168, 76, 0.45); --glow: rgba(201, 168, 76, 0.12); --orb-1: #c9a84c; --orb-2: #7a5c20; --text-primary: #f0e6cc; --text-muted: rgba(240, 230, 204, 0.55); --border: rgba(201, 168, 76, 0.18); --border-bright: rgba(201, 168, 76, 0.4); --line: rgba(201, 168, 76, 0.25); --nav-bg: rgba(8, 7, 12, 0.95); }
+        body.theme-2 { --bg-primary: #03050f; --bg-secondary: #080e22; --bg-card: rgba(10, 15, 35, 0.8); --accent: #4a8fd4; --accent-light: #6eb0f0; --accent-dark: #2a5fa0; --accent-glow: rgba(74, 143, 212, 0.45); --glow: rgba(74, 143, 212, 0.12); --orb-1: #4a8fd4; --orb-2: #1a3a7a; --text-primary: #d4e8f8; --text-muted: rgba(212, 232, 248, 0.55); --border: rgba(74, 143, 212, 0.18); --border-bright: rgba(74, 143, 212, 0.4); --line: rgba(74, 143, 212, 0.25); --nav-bg: rgba(3, 5, 18, 0.95); }
+        body.theme-3 { --bg-primary: #030a06; --bg-secondary: #081408; --bg-card: rgba(8, 20, 10, 0.8); --accent: #3dab75; --accent-light: #5dd495; --accent-dark: #1d7a4a; --accent-glow: rgba(61, 171, 117, 0.45); --glow: rgba(61, 171, 117, 0.12); --orb-1: #3dab75; --orb-2: #0d5c2e; --text-primary: #ccf0de; --text-muted: rgba(204, 240, 222, 0.55); --border: rgba(61, 171, 117, 0.18); --border-bright: rgba(61, 171, 117, 0.4); --line: rgba(61, 171, 117, 0.25); --nav-bg: rgba(3, 8, 5, 0.95); }
+        body.theme-4 { --bg-primary: #07040e; --bg-secondary: #110820; --bg-card: rgba(16, 10, 32, 0.8); --accent: #9b72cf; --accent-light: #c09aee; --accent-dark: #6b42a0; --accent-glow: rgba(155, 114, 207, 0.45); --glow: rgba(155, 114, 207, 0.12); --orb-1: #9b72cf; --orb-2: #4a1a80; --text-primary: #e8d8f8; --text-muted: rgba(232, 216, 248, 0.55); --border: rgba(155, 114, 207, 0.18); --border-bright: rgba(155, 114, 207, 0.4); --line: rgba(155, 114, 207, 0.25); --nav-bg: rgba(7, 4, 14, 0.95); }
+        body.theme-5 { --bg-primary: #0a0305; --bg-secondary: #1c0608; --bg-card: rgba(28, 8, 10, 0.8); --accent: #c94a5a; --accent-light: #e87080; --accent-dark: #9a2030; --accent-glow: rgba(201, 74, 90, 0.45); --glow: rgba(201, 74, 90, 0.12); --orb-1: #c94a5a; --orb-2: #7a1020; --text-primary: #f8d8dc; --text-muted: rgba(248, 216, 220, 0.55); --border: rgba(201, 74, 90, 0.18); --border-bright: rgba(201, 74, 90, 0.4); --line: rgba(201, 74, 90, 0.25); --nav-bg: rgba(10, 3, 5, 0.95); }
+        body.theme-6 { --bg-primary: #f5f0e8; --bg-secondary: #ede5d5; --bg-card: rgba(255, 252, 245, 0.9); --accent: #8a6420; --accent-light: #b08030; --accent-dark: #5a4010; --accent-glow: rgba(138, 100, 32, 0.35); --glow: rgba(138, 100, 32, 0.08); --orb-1: #c9a84c; --orb-2: #e8d4a0; --text-primary: #1a1208; --text-muted: rgba(26, 18, 8, 0.55); --border: rgba(138, 100, 32, 0.2); --border-bright: rgba(138, 100, 32, 0.45); --line: rgba(138, 100, 32, 0.2); --nav-bg: rgba(240, 233, 218, 0.98); }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-primary);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -20%, var(--glow), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,0,0,0.3), transparent);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        /* ═══════════════════════════════════════════════
+           مؤثرات الخلفية
+        ═══════════════════════════════════════════════ */
+        .royal-grid {
+            position: fixed; inset: 0; z-index: -3;
+            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+            opacity: 0.4; animation: grid-drift 30s linear infinite; will-change: background-position;
+        }
+        @keyframes grid-drift { 0% { background-position: 0 0; } 100% { background-position: 60px 60px; } }
+
+        .orb {
+            position: fixed; border-radius: 50%; z-index: -2;
+            animation: orb-float 20s infinite alternate ease-in-out; mix-blend-mode: screen; will-change: transform;
+        }
+        body.theme-6 .orb { mix-blend-mode: multiply; }
+        .orb-1 { top: -15%; right: -10%; width: 45vw; height: 45vw; background: radial-gradient(circle, var(--orb-1) 0%, rgba(0,0,0,0) 65%); opacity: 0.4; }
+        .orb-2 { bottom: -15%; left: -10%; width: 55vw; height: 55vw; background: radial-gradient(circle, var(--orb-2) 0%, rgba(0,0,0,0) 65%); opacity: 0.3; animation-delay: -10s; }
+        .orb-3 { top: 40%; left: 30%; width: 30vw; height: 30vw; background: radial-gradient(circle, var(--accent) 0%, rgba(0,0,0,0) 65%); opacity: 0.1; animation-delay: -5s; animation-duration: 25s; }
+        @keyframes orb-float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20px, 30px) scale(1.05); } 100% { transform: translate(-40px, 10px) scale(0.95); } }
+
+        /* ═══════════════════════════════════════════════
+           العناصر الزجاجية (Glassmorphism)
+        ═══════════════════════════════════════════════ */
+        .glass {
+            background: var(--bg-card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative; overflow: hidden;
+        }
+        .glass-royal {
+            background: var(--bg-card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border); border-top: 1px solid var(--border-bright);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25), inset 0 1px 0 var(--border-bright);
+            position: relative; overflow: hidden; transition: all 0.3s ease;
+        }
+
+        /* ═══════════════════════════════════════════════
+           الهيدر (Header)
+        ═══════════════════════════════════════════════ */
+        .royal-header { position: relative; padding: 20px 20px 16px; }
+        .royal-header::after {
+            content: ''; position: absolute; bottom: 0; left: 5%; right: 5%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--line), var(--accent-glow), var(--line), transparent);
+        }
+
+        .brand-logo {
+            width: 52px; height: 52px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--border-bright); box-shadow: 0 0 0 1px var(--border), 0 4px 15px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .brand-logo-symbol { font-size: 22px; color: var(--accent); filter: drop-shadow(0 0 8px var(--accent-glow)); z-index: 1; }
+        .brand-name { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.7rem; color: var(--text-primary); line-height: 1; }
+        .brand-tagline { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.9; }
+
+        .header-btn {
+            width: 44px; height: 44px; border-radius: 14px; background: var(--bg-card); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; color: var(--accent);
+            transition: all 0.2s ease; outline: none;
+        }
+        .header-btn:active { transform: scale(0.92); }
+        .header-btn i { font-size: 1.15rem; filter: drop-shadow(0 0 4px var(--accent-glow)); }
+
+        .dropdown-menu {
+            position: absolute; left: 0; margin-top: 10px; width: 200px;
+            background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-bright); border-radius: 18px; padding: 8px; z-index: 2000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px;
+            font-size: 13px; font-weight: 700; color: var(--text-primary); text-decoration: none; transition: 0.2s;
+        }
+        .dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
+        .dropdown-item.danger { color: #e87070; }
+        .dropdown-item.danger:hover { background: rgba(232,112,112,0.08); }
+
+        /* ═══════════════════════════════════════════════
+           شريط التنقل السفلي (Bottom Nav) المطور
+        ═══════════════════════════════════════════════ */
+        .nav-bar {
+            position: fixed; bottom: max(18px, env(safe-area-inset-bottom)); left: 16px; right: 16px;
+            height: 70px; max-width: 480px; margin: 0 auto; border-radius: 35px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border); border-top: 1px solid var(--border-bright);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 64px; height: 100%; color: var(--text-muted); text-decoration: none; position: relative;
+            transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .nav-item i { font-size: 1.3rem; margin-bottom: 4px; transition: 0.3s; }
+        .nav-item span { font-size: 10px; font-weight: 700; opacity: 0; transform: translateY(10px); transition: 0.3s; position: absolute; bottom: 8px;}
+        
+        .nav-item.active { color: var(--accent) !important; }
+        .nav-item.active i { transform: translateY(-12px); filter: drop-shadow(0 4px 6px var(--accent-glow)); }
+        .nav-item.active span { opacity: 1; transform: translateY(0); }
+        .nav-item.active::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 4px; background: var(--accent); border-radius: 4px 4px 0 0;
+            box-shadow: 0 -2px 10px var(--accent-glow);
+        }
+
+        /* ═══════════════════════════════════════════════
+           عناصر النظام (Toasts, Loader, Network)
+        ═══════════════════════════════════════════════ */
+        /* رادار الشبكة (Offline Badge) */
+        #offline-badge {
+            position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white;
+            text-align: center; font-size: 12px; font-weight: bold; padding: 4px; z-index: 9999;
+            transform: translateY(-100%); transition: transform 0.3s ease; box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+        }
+        #offline-badge.show { transform: translateY(0); }
+
+        /* شاشة التحميل الزجاجية (Page Loader) */
+        #page-loader {
+            position: fixed; inset: 0; background: var(--bg-primary); z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        .loader-spinner {
+            width: 50px; height: 50px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* نظام الإشعارات الموحد (Global Toasts) */
+        .global-toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9000; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+        .global-toast {
+            background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border);
+            border-right: 4px solid var(--accent); border-radius: 16px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: toast-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; pointer-events: auto;
+        }
+        .global-toast.success { border-right-color: #10b981; }
+        .global-toast.error { border-right-color: #ef4444; }
+        .global-toast.success i { color: #10b981; }
+        .global-toast.error i { color: #ef4444; }
+
+        @keyframes toast-enter { 0% { opacity: 0; transform: translateY(-50px) scale(0.9); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toast-leave { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.9) translateY(-20px); } }
+
+        .btn-press:active { transform: scale(0.95); }
+        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+
+<body x-data="{
+        showUserMenu: false,
+        themeId: localStorage.getItem('andal-theme') || 1,
+        greetingText: 'مرحباً بك',
+        
+        init() {
+            this.applyTheme(this.themeId);
+            this.updateTimeAwareUI();
+            
+            // إخفاء شاشة التحميل بعد اكتمال الصفحة
+            window.addEventListener('load', () => {
+                const loader = document.getElementById('page-loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 500);
+            });
+        },
+        
+        applyTheme(id) {
+            this.themeId = id;
+            const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-') && c !== '');
+            document.body.className = [...classes, `theme-${id}`].join(' ');
+
+            // تحديث لون الستاتس بار في الجوال
+            const themeColors = {1: '#06050a', 2: '#03050f', 3: '#030a06', 4: '#07040e', 5: '#0a0305', 6: '#f5f0e8'};
+            document.getElementById('meta-theme-color').content = themeColors[id];
+
+            this.updateTimeAwareUI();
+            localStorage.setItem('andal-theme', id);
+        },
+
+        nextTheme() {
+            let nextId = parseInt(this.themeId) + 1;
+            if (nextId > 6) nextId = 1;
+            this.applyTheme(nextId);
+            playGlassSound();
+        },
+
+        updateTimeAwareUI() {
+            const hour = new Date().getHours();
+            document.body.classList.remove('is-morning', 'is-evening');
+            if (hour >= 5 && hour < 12) {
+                this.greetingText = 'صباح الخير 🌅';
+                document.body.classList.add('is-morning');
+            } else if (hour >= 12 && hour < 18) {
+                this.greetingText = 'طاب مساؤك ☀️';
+            } else {
+                this.greetingText = 'مساء الخير 🌌';
+                document.body.classList.add('is-evening');
+            }
+        }
+    }"
+    class="pb-36 pt-safe"
+    @click.outside="showUserMenu = false">
+
+    <div id="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <div id="offline-badge">
+        <i class="fas fa-wifi-slash ml-2"></i> انقطع الاتصال بالإنترنت. يرجى التحقق من الشبكة.
+    </div>
+
+    <div class="global-toast-container" id="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="global-toast {{ category }}">
+                        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                            <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-white text-sm font-bold">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="royal-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div>
+        <header class="royal-header max-w-2xl mx-auto flex items-center justify-between z-50 relative">
+            <div class="flex items-center gap-3">
+                <div class="brand-logo">
+                    <span class="brand-logo-symbol">⌬</span>
+                </div>
+                <div>
+                    <h1 class="brand-name">عندل ستار</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span x-text="greetingText" class="text-[10px] font-bold text-[var(--accent)] opacity-90"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                {% if session.get('user_id') %}
+                <a href="/notifications" onclick="playGlassSound()" class="header-btn btn-press relative group">
+                    <i class="fa-regular fa-bell"></i>
+                    {% if unread_count is defined and unread_count > 0 %}
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center border-2 border-black">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                {% endif %}
+
+                <button @click="nextTheme()" class="header-btn btn-press group" title="تغيير المظهر">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+
+                {% if session.get('user_id') %}
+                <div class="relative">
+                    <button onclick="playGlassSound()" class="header-btn btn-press" @click="showUserMenu = !showUserMenu">
+                        <i class="fa-regular fa-circle-user text-xl"></i>
+                    </button>
+                    <div x-show="showUserMenu" x-cloak class="dropdown-menu"
+                         x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+                        <a href="/profile" onclick="playGlassSound()" class="dropdown-item">
+                            <i class="fa-solid fa-id-card-clip" style="color:var(--accent);"></i> الملف الشخصي
+                        </a>
+                        <div class="w-full h-px bg-white/10 my-1"></div>
+                        <a href="/logout" onclick="playGlassSound()" class="dropdown-item danger">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل خروج
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <main class="max-w-2xl mx-auto px-4 py-5 relative z-10">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% if session.get('user_id') %}
+        {% if session.get('role') != 'admin' %}
+        <nav class="nav-bar">
+            <a href="/dashboard" class="nav-item" id="nav-dash" onclick="playGlassSound()">
+                <i class="fa-solid fa-house"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="/buy" class="nav-item" id="nav-buy" onclick="playGlassSound()">
+                <i class="fa-solid fa-store"></i>
+                <span>المتجر</span>
+            </a>
+            <a href="/myvouchers" class="nav-item" id="nav-vou" onclick="playGlassSound()">
+                <i class="fa-solid fa-ticket"></i>
+                <span>كروتي</span>
+            </a>
+        </nav>
+        {% else %}
+        <nav class="nav-bar">
+            <a href="/admin/dashboard" class="nav-item" id="nav-adash" onclick="playGlassSound()">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>اللوحة</span>
+            </a>
+            <a href="/admin/customers" class="nav-item" id="nav-acust" onclick="playGlassSound()">
+                <i class="fa-solid fa-users"></i>
+                <span>العملاء</span>
+            </a>
+            <a href="/admin/stock" class="nav-item" id="nav-astock" onclick="playGlassSound()">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>المخزون</span>
+            </a>
+        </nav>
+        {% endif %}
+    {% endif %}
+
+    <script>
+        // ── نظام التنبيهات الموحد (إخفاء تلقائي) ──
+        document.addEventListener("DOMContentLoaded", () => {
+            const toasts = document.querySelectorAll('.global-toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.animation = 'toast-leave 0.5s forwards';
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000);
+            });
+        });
+
+        // ── رادار الشبكة ──
+        window.addEventListener('offline', () => document.getElementById('offline-badge').classList.add('show'));
+        window.addEventListener('online', () => document.getElementById('offline-badge').classList.remove('show'));
+
+        // ── التفاعل الصوتي ──
+        window.playGlassSound = function() {
+            if (navigator.vibrate) navigator.vibrate(10);
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        // ── تحديد الصفحة النشطة في الشريط السفلي ──
+        document.addEventListener('DOMContentLoaded', function() {
+            const path = window.location.pathname;
+            const map = {
+                '/dashboard': 'nav-dash',
+                '/buy': 'nav-buy',
+                '/myvouchers': 'nav-vou',
+                '/admin/dashboard': 'nav-adash',
+                '/admin/customers': 'nav-acust',
+                '/admin/stock': 'nav-astock'
+            };
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            for (let [route, id] of Object.entries(map)) {
+                if (path === route || path.startsWith(route + '/')) {
+                    const el = document.getElementById(id);
+                    if(el) el.classList.add('active');
+                    break;
+                }
+            }
+        });
+
+        // ── تفعيل نظام PWA ──
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ PWA Active: Service Worker Registered', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('❌ PWA Error: Service Worker Registration Failed', error);
+                    });
+            });
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

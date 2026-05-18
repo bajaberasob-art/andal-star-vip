@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عندل ستار | إنشاء حساب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at top, #1e293b, #0f172a, #020617);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 1rem;
+        }
+
+        /* البطاقة الأنيقة الثابتة */
+        .solid-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 1.5rem;
+        }
+
+        /* حقول الإدخال الثابتة والواضحة */
+        .clean-input {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .clean-input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+            background-color: #0f172a;
+        }
+
+        /* حل مشكلة تحول الحقل للون الأبيض عند التعبئة التلقائية (Autofill) في الجوال */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* إشعار الخطأ الذكي */
+        #smartToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%);
+            background: #1e293b; border-right: 4px solid #f43f5e;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.4s ease; z-index: 100;
+        }
+        #smartToast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div id="smartToast" class="flex items-center gap-4 px-6 py-4 rounded-xl w-[90%] max-w-sm">
+        <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0">
+            <i class="fas fa-exclamation-triangle text-rose-500"></i>
+        </div>
+        <div>
+            <h4 class="text-white font-bold text-sm">تنبيه</h4>
+            <p id="toastMessage" class="text-gray-300 text-xs mt-1 leading-relaxed"></p>
+        </div>
+    </div>
+
+    <div class="w-full max-w-md">
+        
+        <div class="solid-card p-6 sm:p-8">
+            
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto bg-sky-500/10 rounded-2xl flex items-center justify-center border border-sky-500/20 mb-4">
+                    <i class="fas fa-star text-3xl text-sky-400"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-tight">عندل ستار</h1>
+                <p class="text-gray-400 text-xs mt-1">أنشئ حسابك الجديد</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-3">
+                    <i class="fas fa-info-circle text-rose-400"></i>
+                    <span class="text-rose-200 text-sm">{{ message }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" id="regForm" class="space-y-5">
+                
+                <div>
+                    <label class="block text-gray-300 text-sm font-bold mb-2">الاسم بالكامل</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" name="name" class="clean-input w-full rounded-xl py-3 pr-11 pl-4 text-sm" placeholder="مثال: عبدالله باجابر" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 text-sm font-bold mb-2">رقم الجوال (يمني فقط)</label>
+                    <div class="flex rounded-xl overflow-hidden border border-slate-600 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 transition-all">
+                        <div class="bg-slate-800 px-4 flex items-center justify-center border-l border-slate-600 text-gray-300 text-sm font-bold select-none" dir="ltr">
+                            +967 <span class="ml-1">🇾🇪</span>
+                        </div>
+                        <input type="tel" name="phone" id="phoneInput" class="w-full bg-slate-800 text-white py-3 px-4 focus:outline-none font-mono tracking-widest text-left" 
+                               dir="ltr" placeholder="77XXXXXXX" required maxlength="9" pattern="^(77|78|73|70)\d{7}$">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 text-sm font-bold mb-2">كلمة المرور</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="password" name="password" id="pass" class="clean-input w-full rounded-xl py-3 pr-11 pl-12 text-sm" placeholder="••••••••" required minlength="6">
+                        <button type="button" onclick="togglePass()" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1">
+                            <i id="eyeIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                        class="w-full bg-sky-500 hover:bg-sky-400 text-white font-bold py-3.5 rounded-xl text-lg mt-6 transition-colors flex items-center justify-center gap-2">
+                    <span>انضم الآن</span>
+                    <i class="fas fa-arrow-left text-sm"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <a href="/login" class="text-gray-400 hover:text-white transition-colors text-sm font-bold inline-flex items-center gap-2">
+                    <span>هل تمتلك حساباً بالفعل؟</span>
+                    <span class="text-sky-400">سجل الدخول</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // دالة إظهار كلمة المرور
+        function togglePass() {
+            const pass = document.getElementById("pass");
+            const icon = document.getElementById("eyeIcon");
+            if (pass.type === "password") {
+                pass.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                pass.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        // إشعار الخطأ الذكي
+        function showToast(message) {
+            const toast = document.getElementById('smartToast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+
+        // الحماية الصارمة لبيانات الهاتف (يمني فقط)
+        document.getElementById("regForm").onsubmit = function(e) {
+            const phoneField = document.getElementById("phoneInput");
+            const phone = phoneField.value;
+            const btn = document.getElementById("submitBtn");
+            
+            const phoneRegex = /^(77|78|73|70)\d{7}$/;
+            
+            if(!phoneRegex.test(phone)) {
+                e.preventDefault(); 
+                showToast("تنسيق الرقم غير صحيح. يجب أن يبدأ بـ (77, 78, 73, 70) ويتكون من 9 أرقام.");
+                
+                // تلوين الحقل بالأحمر كدليل بصري
+                phoneField.parentElement.style.borderColor = "#f43f5e";
+                setTimeout(() => { phoneField.parentElement.style.borderColor = "#475569"; }, 2000);
+                return false; 
+            }
+
+            // منع النقر المزدوج
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>جاري المعالجة...</span>';
+        };
+
+        // منع إدخال أي شيء غير الأرقام في حقل الهاتف فوراً
+        document.getElementById("phoneInput").addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>
+

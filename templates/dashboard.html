@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}الرئيسية | عندل ستار{% endblock %}
+
+{% block content %}
+<style>
+  /* ── تأثيرات الظهور السلس ── */
+  .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+  .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+  .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+  .stagger-4 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both; }              
+  
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── البطاقة البنكية الفخمة (Smart Card) ── */
+  .bank-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-bright);
+    border-radius: 28px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .bank-card::before {
+    content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.5; pointer-events: none; z-index: 0;
+  }
+
+  .card-chip {
+    width: 45px; height: 32px;
+    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    border-radius: 6px;
+    position: relative; overflow: hidden;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  .card-chip::after {
+    content: ''; position: absolute; inset: 2px;
+    border: 1px solid rgba(0,0,0,0.2); border-radius: 4px;
+    background-image: linear-gradient(90deg, transparent 48%, rgba(0,0,0,0.2) 48%, rgba(0,0,0,0.2) 52%, transparent 52%),
+                      linear-gradient(0deg, transparent 48%, rgba(0,0,0,0.2) 48%, rgba(0,0,0,0.2) 52%, transparent 52%);
+  }
+
+  .balance-display {
+    min-height: 80px; display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; margin: 20px 0;
+  }
+
+  .balance-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem; font-weight: 700; color: var(--text-primary);
+    line-height: 1; text-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  /* ── شبكة البينتو (Bento Grid) ── */
+  .bento-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  }
+  .bento-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 20px 16px; text-align: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    position: relative; overflow: hidden; text-decoration: none;
+  }
+  .bento-item:active { transform: scale(0.95); border-color: var(--accent); }
+  
+  .bento-icon {
+    width: 50px; height: 50px; border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+    border: 1px solid var(--border-bright); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
+
+  /* ── نموذج التحويل ── */
+  .action-panel {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; transition: all 0.3s;
+  }
+  .action-header {
+    padding: 20px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .action-body {
+    padding: 0 20px; max-height: 0; opacity: 0; transition: all 0.4s ease; overflow: hidden;
+  }
+  .action-panel.open .action-body {
+    padding: 0 20px 20px; max-height: 300px; opacity: 1;
+  }
+  .action-panel.open .chevron { transform: rotate(180deg); color: var(--accent); }
+
+  .input-royal {
+    width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    color: var(--text-primary); border-radius: 16px; padding: 16px 45px 16px 16px;
+    font-size: 14px; outline: none; transition: 0.3s;
+  }
+  .input-royal:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  .btn-royal {
+    width: 100%; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 15px;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff; border: none; cursor: pointer; transition: 0.2s;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3); box-shadow: 0 8px 20px var(--accent-glow);
+  }
+  .btn-royal:active { transform: scale(0.97); }
+
+  /* ── شريط آخر عملية ── */
+  .recent-tx {
+    background: linear-gradient(90deg, var(--bg-card), transparent);
+    border-right: 3px solid var(--accent); border-radius: 12px;
+    padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+  }
+</style>
+
+<div class="px-2">
+
+  <div class="bank-card stagger-1">
+    <div class="flex justify-between items-start relative z-10">
+      <div class="card-chip"></div>
+      <div class="flex flex-col items-end">
+        <i class="fas fa-wifi text-xl opacity-50 mb-1" style="transform: rotate(90deg);"></i>
+        <span class="text-[10px] font-bold tracking-widest uppercase opacity-60 text-white">رصيد الحساب</span>
+      </div>
+    </div>
+
+    <div class="balance-display" id="balanceDisplay">
+      <div id="balanceVisible" class="flex flex-col items-center justify-center w-full" style="transition: 0.3s;">
+        <div class="flex items-end gap-2">
+          <span class="balance-amount">{{ user.balance | round(0) | int }}</span>
+          <span class="text-sm font-bold text-[var(--accent)] mb-3 uppercase tracking-wider">ر.ي</span>
+        </div>
+      </div>                                                                                      
+      <div id="balanceHidden" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 pointer-events-none" style="transition: 0.3s;">
+        <i class="fas fa-fingerprint text-4xl text-[var(--accent)] opacity-40 animate-pulse"></i>
+        <span class="text-[10px] mt-2 font-bold tracking-widest uppercase opacity-50">انقر لكشف الرصيد</span>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-end relative z-10 pt-4 border-t border-white/10">
+      <div>
+        <p class="text-[9px] opacity-50 tracking-widest mb-1">حامل البطاقة</p>
+        <p class="text-sm font-bold tracking-wide">{{ user.full_name or 'عميل VIP' }}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="revealBtn" onclick="toggleBalance()" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--accent-glow)] transition-all">
+          <i id="eyeIcon" class="fas fa-eye text-[var(--text-primary)]"></i>
+        </button>
+        <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+          <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+          <span class="text-[10px] font-bold text-emerald-400">نشط</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if purchases %}
+  <div class="mt-6 stagger-2">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <span class="text-[11px] font-bold tracking-widest text-[var(--text-muted)]">آخر عملية لك</span>
+      <a href="/history" class="text-[10px] text-[var(--accent)] hover:underline">عرض الكل</a>
+    </div>
+    <div class="recent-tx">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-[var(--accent-glow)] flex items-center justify-center">
+          <i class="fas fa-shopping-bag text-[var(--accent)] text-xs"></i>
+        </div>
+        <div>
+          <p class="text-xs font-bold">{{ purchases[0].package_name }}</p>
+          <p class="text-[9px] opacity-50">{{ purchases[0].purchased_at }}</p>
+        </div>
+      </div>
+      <div class="text-left">
+        <p class="text-sm font-black text-emerald-400">-{{ purchases[0].amount_paid | round(0) | int }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mt-6 stagger-3">
+    <div class="bento-grid">
+      
+      <a href="/buy" onclick="playGlassSound()" class="bento-item">
+        <div class="bento-icon shadow-[0_0_15px_var(--accent-glow)]"><i class="fas fa-store"></i></div>
+        <span class="text-xs font-bold text-[var(--text-primary)]">شراء باقة</span>
+      </a>
+      
+      <a href="/myvouchers" onclick="playGlassSound()" class="bento-item">
+        <div class="bento-icon"><i class="fas fa-ticket-alt"></i></div>
+        <span class="text-xs font-bold text-[var(--text-primary)]">محفظة الكروت</span>
+      </a>
+      
+      <a href="/offers" onclick="playGlassSound()" class="bento-item">
+        <div class="bento-icon"><i class="fas fa-fire"></i></div>
+        <span class="text-xs font-bold text-[var(--text-primary)]">أقوى العروض</span>
+      </a>
+      
+      <a href="/profile" onclick="playGlassSound()" class="bento-item">
+        <div class="bento-icon"><i class="fas fa-star text-amber-400"></i></div>
+        <div class="flex flex-col items-center">
+            <span class="text-xs font-bold text-[var(--text-primary)]">النقاط والرتبة</span>
+            <span class="text-[9px] text-amber-400 font-bold mt-1">{{ user.points }} نقطة</span>
+        </div>
+      </a>
+
+      <a href="/history" onclick="playGlassSound()" class="bento-item" style="grid-column: span 2; flex-direction: row; justify-content: space-between; padding: 20px 24px;">
+        <div class="flex items-center gap-4">
+          <div class="bento-icon shadow-[0_0_15px_var(--accent-glow)]" style="width: 44px; height: 44px; margin-bottom: 0;">
+            <i class="fas fa-clock-rotate-left"></i>
+          </div>
+          <div class="text-right">
+            <span class="text-sm font-bold text-[var(--text-primary)] block">السجل المالي الكامل</span>
+            <span class="text-[10px] text-[var(--text-muted)] mt-1 block">عرض جميع مشترياتك ومدفوعاتك السابقة</span>
+          </div>
+        </div>
+        <i class="fas fa-chevron-left text-[10px] opacity-30"></i>
+      </a>
+      
+    </div>
+  </div>
+
+  <div class="mt-6 stagger-4">
+    <div class="action-panel" id="transferPanel">
+      <div class="action-header" onclick="toggleTransfer()">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+            <i class="fas fa-exchange-alt text-blue-400"></i>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-[var(--text-primary)]">تحويل رصيد</p>
+            <p class="text-[10px] text-[var(--text-muted)]">إرسال رصيد لأي رقم آخر</p>
+          </div>
+        </div>
+        <i class="fas fa-chevron-down chevron text-[10px] text-[var(--text-muted)] transition-transform"></i>
+      </div>
+
+      <div class="action-body">
+        <div class="w-full h-px bg-white/5 mb-4"></div>
+        <form action="/transfer_balance" method="POST" class="flex flex-col gap-3 pb-2">
+          <div class="relative">
+            <i class="fas fa-phone absolute right-4 top-1/2 -translate-y-1/2 text-[var(--accent)] opacity-60"></i>
+            <input type="tel" name="recipient_phone" placeholder="رقم جوال المستلم..." required class="input-royal" dir="ltr" style="text-align: right;">
+          </div>
+          <div class="relative">
+            <i class="fas fa-coins absolute right-4 top-1/2 -translate-y-1/2 text-[var(--accent)] opacity-60"></i>
+            <input type="number" name="amount" placeholder="المبلغ (الحد الأدنى 500)" required min="500" class="input-royal">
+          </div>
+          <button type="submit" class="btn-royal mt-2 flex items-center justify-center gap-2" onclick="playGlassSound()">
+            <i class="fas fa-paper-plane"></i> إرسال الرصيد
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% if user.debt == 0 %}
+  <div class="mt-4 mb-8 stagger-4" style="animation-delay: 0.5s;">
+    <button onclick="requestLoan()" class="w-full bg-amber-500/10 border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/20 transition-all rounded-2xl p-4 flex items-center justify-between group">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <i class="fas fa-bolt text-amber-400 text-lg"></i>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-[var(--text-primary)]">طاقة الطوارئ</p>
+          <p class="text-[10px] text-amber-400/80 mt-0.5">احصل على 100 ريال سلفة فوراً</p>
+        </div>
+      </div>
+      <i class="fas fa-arrow-left text-[10px] text-amber-400/50 group-hover:text-amber-400 group-hover:-translate-x-1 transition-all"></i>
+    </button>
+  </div>
+  {% endif %}                                                                                     
+</div>
+
+<script>
+  // نظام إخفاء الرصيد البنكي
+  let balanceHidden = false;
+  function toggleBalance() {
+    balanceHidden = !balanceHidden;
+    const vis = document.getElementById('balanceVisible');
+    const hid = document.getElementById('balanceHidden');
+    const icon = document.getElementById('eyeIcon');
+    const btn = document.getElementById('revealBtn');
+
+    if(typeof playGlassSound === 'function') playGlassSound();
+
+    if (balanceHidden) {
+      vis.style.opacity = '0'; vis.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        vis.style.display = 'none';
+        hid.style.pointerEvents = 'auto';
+        hid.style.opacity = '1';
+      }, 300);
+      icon.className = 'fas fa-eye-slash';
+      btn.classList.add('bg-[var(--accent-glow)]', 'border-[var(--accent)]');
+    } else {
+      hid.style.opacity = '0'; hid.style.pointerEvents = 'none';
+      vis.style.display = 'flex';
+      setTimeout(() => {
+        vis.style.opacity = '1';
+        vis.style.transform = 'scale(1)';
+      }, 10);
+      icon.className = 'fas fa-eye';
+      btn.classList.remove('bg-[var(--accent-glow)]', 'border-[var(--accent)]');
+    }
+  }
+
+  // نظام التحويل السريع (الأكورديون)
+  function toggleTransfer() {
+    if(typeof playGlassSound === 'function') playGlassSound();
+    const panel = document.getElementById('transferPanel');
+    panel.classList.toggle('open');                                                                 
+  }
+
+  // نظام طلب السلفة السريع (Fetch)
+  async function requestLoan() {
+    if(typeof playGlassSound === 'function') playGlassSound();
+    if(confirm('هل أنت متأكد من طلب سلفة طوارئ (100 ريال) سيتم خصمها من شحنتك القادمة؟')) {
+      try {
+        const res = await fetch('/take_salfah', { method: 'POST' });
+        const data = await res.json();
+        if(data.success) {
+          if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+          alert('⚡ تمت إضافة 100 ريال لرصيدك بنجاح!');
+          location.reload();
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) {
+        alert('خطأ في الاتصال بالخادم.');
+      }
+    }
+  }
+</script>
+{% endblock %}
+

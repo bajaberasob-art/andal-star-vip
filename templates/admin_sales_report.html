@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+    .stagger-4 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both; }
+
+    /* ── فورم التاريخ (Date Filter) ── */
+    .filter-card {
+        background: linear-gradient(145deg, var(--bg-card) 0%, rgba(0,0,0,0.2) 100%);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-bright); border-radius: 28px; padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 24px;
+    }
+    
+    .date-input-wrap { position: relative; width: 100%; }
+    .date-input {
+        width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+        border-radius: 16px; padding: 14px 16px 14px 45px; color: var(--text-primary);
+        font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+        outline: none; transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .date-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    
+    /* تلوين أيقونة التقويم الافتراضية */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) opacity(0.5); cursor: pointer; transition: 0.3s;
+    }
+    .date-input:focus::-webkit-calendar-picker-indicator { filter: invert(1) opacity(1); }
+
+    .btn-filter {
+        width: 100%; padding: 14px; border-radius: 16px; font-weight: 900; font-size: 14px;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff;
+        border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px var(--accent-glow);
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-filter:active { transform: scale(0.95); }
+
+    /* ── كروت الملخص (Summary Stats) ── */
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+    .summary-box {
+        background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--accent);
+        border-radius: 20px; padding: 16px; text-align: center; position: relative; overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .summary-box::before {
+        content: ''; position: absolute; top: -20px; right: -20px; width: 60px; height: 60px;
+        background: radial-gradient(circle, var(--accent-glow), transparent 70%); pointer-events: none;
+    }
+    .s-val { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 900; color: var(--text-primary); line-height: 1.2; }
+    .s-val-text { font-size: 1rem; font-weight: 900; color: var(--text-primary); line-height: 1.2; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── شريط العمليات (Transaction Feed) ── */
+    .tx-item {
+        background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+        padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+        transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .tx-item:hover { border-color: var(--border-bright); transform: translateY(-2px); }
+    
+    .tx-icon {
+        width: 44px; height: 44px; border-radius: 14px; shrink-0;
+        background: rgba(255,255,255,0.05); border: 1px solid var(--border-bright);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; color: var(--accent); box-shadow: inset 0 2px 5px rgba(255,255,255,0.05);
+    }
+    
+    .tx-amount { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 900; color: #10b981; }
+    .tx-user-badge {
+        background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted);
+        padding: 2px 8px; border-radius: 8px; font-size: 9px; font-family: monospace; font-weight: 800; letter-spacing: 0.1em;
+    }
+
+    /* ── زر الإكسل ── */
+    .btn-excel {
+        display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 16px;
+        background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981; font-weight: 800; font-size: 12px; cursor: pointer; transition: 0.2s;
+    }
+    .btn-excel:active { transform: scale(0.95); background: #10b981; color: #fff; }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-calendar-check text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">تقرير المبيعات</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">تصفية وحساب الأرباح حسب الفترة</p>
+    </div>
+
+    <div class="filter-card stagger-2">
+        <form method="POST" action="/admin/sales_report" class="flex flex-col gap-4">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-[10px] text-[var(--text-muted)] font-bold mb-2 uppercase tracking-widest px-1">من تاريخ:</label>
+                    <div class="date-input-wrap">
+                        <input type="date" name="start_date" value="{{ start_date or '' }}" required class="date-input" dir="ltr">
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-[10px] text-[var(--text-muted)] font-bold mb-2 uppercase tracking-widest px-1">إلى تاريخ:</label>
+                    <div class="date-input-wrap">
+                        <input type="date" name="end_date" value="{{ end_date or '' }}" required class="date-input" dir="ltr">
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn-filter mt-2" onmousedown="playGlassSound()">
+                <i class="fas fa-filter"></i> إستخراج التقرير
+            </button>
+        </form>
+    </div>
+
+    {% if start_date and end_date %}
+    
+    <div class="summary-grid stagger-3">
+        <div class="summary-box">
+            <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">الإيرادات</p>
+            <p class="s-val text-[#10b981]">{{ total_revenue | round(0) | int }}</p>
+        </div>
+        <div class="summary-box">
+            <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">الباقات المباعة</p>
+            <p class="s-val">{{ total_sales }}</p>
+        </div>
+        <div class="summary-box">
+            <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">الأكثر مبيعاً</p>
+            <p class="s-val-text">{{ top_package }}</p>
+        </div>
+    </div>
+
+    <div class="stagger-4">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">تفاصيل العمليات</h2>
+            {% if purchases %}
+            <button onclick="alert('سيتم تفعيل تصدير الإكسل للمبيعات قريباً!'); playGlassSound();" class="btn-excel">
+                <i class="fas fa-file-excel"></i> Excel
+            </button>
+            {% endif %}
+        </div>
+
+        <div class="space-y-0">
+            {% for p in purchases %}
+            <div class="tx-item">
+                <div class="flex items-center gap-4">
+                    <div class="tx-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div>
+                        <h3 class="text-sm font-black text-[var(--text-primary)] mb-1">{{ p.package_name }}</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="tx-user-badge">ID: #{{ p.user_id }}</span>
+                            <span class="text-[9px] text-[var(--text-muted)] font-bold"><i class="far fa-clock opacity-50"></i> {{ p.purchased_at }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-left pl-2">
+                    <span class="tx-amount">+{{ p.amount_paid | round(0) | int }}</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-16 bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px]">
+                <div class="w-16 h-16 bg-[var(--bg-primary)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border-bright)]">
+                    <i class="fas fa-folder-open text-2xl text-[var(--text-muted)] opacity-50"></i>
+                </div>
+                <h3 class="text-base font-black text-[var(--text-primary)] mb-1">لا توجد مبيعات</h3>
+                <p class="text-[11px] text-[var(--text-muted)]">لم يتم العثور على أي عمليات في هذه الفترة المحددة.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
+

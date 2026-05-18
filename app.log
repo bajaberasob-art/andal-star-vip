@@ -1,0 +1,69 @@
+2026-03-12 06:01:09,681 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.12.63.233:5000
+2026-03-12 06:01:09,681 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-12 06:01:35,169 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.12.63.233:5000
+2026-03-12 06:01:35,169 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-12 06:01:41,931 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:41] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+2026-03-12 06:01:41,971 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:41] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:01:43,543 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:43] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-12 06:01:46,525 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:46] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:01:57,247 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:57] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:01:59,102 - INFO - 127.0.0.1 - - [12/Mar/2026 06:01:59] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:02:00,672 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:00] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:02:37,211 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:37] "[32mGET / HTTP/1.1[0m" 302 -
+2026-03-12 06:02:37,246 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:37] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:02:40,670 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:40] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:02:51,126 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:51] "[32mGET / HTTP/1.1[0m" 302 -
+2026-03-12 06:02:51,165 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:51] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:02:54,733 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-12 06:02:58,422 - INFO - 127.0.0.1 - - [12/Mar/2026 06:02:58] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:05:43,992 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.12.63.233:5000
+2026-03-12 06:05:43,993 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-12 06:05:43,995 - INFO -  * Restarting with stat
+2026-03-12 06:05:44,717 - WARNING -  * Debugger is active!
+2026-03-12 06:05:44,753 - INFO -  * Debugger PIN: 145-608-457
+2026-03-12 06:05:50,479 - INFO - 127.0.0.1 - - [12/Mar/2026 06:05:50] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:05:51,268 - INFO - 127.0.0.1 - - [12/Mar/2026 06:05:51] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-12 06:05:52,327 - INFO - 127.0.0.1 - - [12/Mar/2026 06:05:52] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:05:53,715 - INFO - 127.0.0.1 - - [12/Mar/2026 06:05:53] "GET /register HTTP/1.1" 200 -
+2026-03-12 06:05:55,543 - INFO - 127.0.0.1 - - [12/Mar/2026 06:05:55] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:08:58,397 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.12.63.233:5000
+2026-03-12 06:08:58,398 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-12 06:08:58,399 - INFO -  * Restarting with stat
+2026-03-12 06:08:59,129 - WARNING -  * Debugger is active!
+2026-03-12 06:08:59,172 - INFO -  * Debugger PIN: 141-580-589
+2026-03-12 06:09:14,954 - INFO - 10.0.1.181 - - [12/Mar/2026 06:09:14] "[32mGET / HTTP/1.1[0m" 302 -
+2026-03-12 06:09:14,995 - INFO - 10.0.1.181 - - [12/Mar/2026 06:09:14] "GET /login HTTP/1.1" 200 -
+2026-03-12 06:09:19,740 - INFO - 10.0.1.181 - - [12/Mar/2026 06:09:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-12 06:09:24,418 - INFO - 10.0.1.181 - - [12/Mar/2026 06:09:24] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-14 03:39:12,963 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://127.0.0.1:5000
+2026-03-14 03:39:12,963 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-14 03:39:12,965 - INFO -  * Restarting with stat
+2026-03-14 03:39:13,661 - WARNING -  * Debugger is active!
+2026-03-14 03:39:13,723 - INFO -  * Debugger PIN: 327-965-695
+2026-03-14 03:39:22,987 - INFO - 127.0.0.1 - - [14/Mar/2026 03:39:22] "GET /login HTTP/1.1" 200 -
+2026-03-14 03:45:34,970 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:34] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+2026-03-14 03:45:34,983 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:34] "GET /login HTTP/1.1" 200 -
+2026-03-14 03:45:37,280 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:37] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-14 03:45:39,348 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:39] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-14 03:45:40,129 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:40] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-14 03:45:47,020 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:47] "[33mPOST /api/login HTTP/1.1[0m" 404 -
+2026-03-14 03:45:56,216 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:56] "GET /register HTTP/1.1" 200 -
+2026-03-14 03:45:59,889 - INFO - 127.0.0.1 - - [14/Mar/2026 03:45:59] "GET /login HTTP/1.1" 200 -
+2026-03-14 03:46:00,943 - INFO - 127.0.0.1 - - [14/Mar/2026 03:46:00] "GET /register HTTP/1.1" 200 -
+2026-03-14 03:46:02,309 - INFO - 127.0.0.1 - - [14/Mar/2026 03:46:02] "GET /register HTTP/1.1" 200 -
+2026-03-14 03:46:04,614 - INFO - 127.0.0.1 - - [14/Mar/2026 03:46:04] "GET /register HTTP/1.1" 200 -

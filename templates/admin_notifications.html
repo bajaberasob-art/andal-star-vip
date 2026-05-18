@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور السلس ── */
+    .stagger-1 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+    .stagger-4 { animation: fadeUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both; }
+
+    /* ── تنسيق الحقول الملكية ── */
+    .input-group { margin-bottom: 20px; }
+    .input-control {
+        width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+        border-radius: 16px; padding: 18px 20px; color: var(--text-primary);
+        font-family: 'Cairo', sans-serif; font-size: 14px; outline: none; transition: 0.3s;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .input-control::placeholder { color: var(--text-muted); opacity: 0.5; font-size: 12px; }
+    .input-control:focus {
+        border-color: var(--accent); background: rgba(0,0,0,0.4);
+        box-shadow: 0 0 0 3px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    textarea.input-control { resize: none; min-height: 120px; line-height: 1.6; }
+
+    /* ── مفتاح التبديل (Toggle Switch) ── */
+    .toggle-wrap {
+        display: flex; items-center; justify-content: space-between;
+        background: rgba(0,0,0,0.2); padding: 16px 20px; border-radius: 16px;
+        border: 1px solid var(--border); margin-bottom: 20px;
+    }
+    .peer:checked ~ .toggle-bg { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    .peer:checked ~ .toggle-bg::after { transform: translateX(100%); border-color: #fff; }
+    
+    .toggle-bg {
+        width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 20px;
+        position: relative; transition: 0.3s;
+    }
+    .toggle-bg::after {
+        content: ''; position: absolute; top: 2px; left: 2px;
+        width: 20px; height: 20px; background: #fff; border-radius: 50%;
+        transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ── مربع اختيار الزبون (مخفي افتراضياً) ── */
+    #customerSelectDiv {
+        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #customerSelectDiv.show { max-height: 100px; opacity: 1; margin-bottom: 20px; }
+
+    /* ── زر الإرسال ── */
+    .btn-submit {
+        width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 16px;
+        background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #fff;
+        border: none; cursor: pointer; transition: 0.2s;
+        box-shadow: 0 10px 25px var(--accent-glow); display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    /* ── بطاقة السجل (History Card) ── */
+    .history-card {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: 24px; padding: 16px 20px; margin-bottom: 12px;
+        transition: 0.3s; position: relative; overflow: hidden;
+    }
+    .history-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .history-card::before {
+        content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 4px;
+        background: var(--accent); opacity: 0.5; border-radius: 0 24px 24px 0;
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="mb-6 stagger-1">
+        <a href="/admin/dashboard" onclick="playGlassSound()" class="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold text-xs bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full">
+            <i class="fas fa-arrow-right"></i>
+            <span>لوحة القيادة</span>
+        </a>
+    </div>
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-paper-plane text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)] animate-pulse"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">نظام البث</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">تواصل مع جمهورك أو أرسل تنبيهاً خاصاً</p>
+    </div>
+
+    <div class="glass-royal rounded-[32px] p-6 sm:p-8 stagger-2 relative max-w-lg mx-auto overflow-hidden mb-12">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-[var(--accent-glow)] rounded-full blur-3xl pointer-events-none"></div>
+        
+        <h2 class="text-sm font-black mb-6 text-[var(--text-primary)] flex items-center gap-2">
+            <i class="fas fa-bullhorn text-[var(--accent)]"></i> إرسال رسالة جديدة
+        </h2>
+
+        <form method="POST" id="notificationForm" class="relative z-10">
+            
+            <div class="input-group">
+                <input type="text" name="title" required class="input-control" placeholder="عنوان الإشعار (مثال: عرض نهاية الأسبوع)">
+            </div>
+
+            <div class="input-group">
+                <textarea name="message" required class="input-control" placeholder="اكتب نص الرسالة هنا..."></textarea>
+            </div>
+
+            <div class="toggle-wrap">
+                <span class="text-xs font-bold text-[var(--text-primary)]">إرسال لجميع المشتركين</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="to_all" id="toAllToggle" checked class="sr-only peer" onchange="toggleCustomerSelect()">
+                    <div class="toggle-bg"></div>
+                </label>
+            </div>
+
+            <div id="customerSelectDiv">
+                <div class="relative">
+                    <select name="user_id" id="userSelect" class="input-control cursor-pointer appearance-none">
+                        {% for c in customers %}
+                        <option value="{{ c.id }}" style="background: var(--bg-primary);">{{ c.full_name }} ({{ c.phone }})</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-[var(--accent)] pointer-events-none opacity-50"></i>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit" onmousedown="playGlassSound()">
+                <span>إطلاق البث الآن</span>
+                <i class="fas fa-satellite-dish"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="max-w-lg mx-auto stagger-3">
+        <h2 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 px-2">سجل الرسائل الصادرة</h2>
+
+        <div class="space-y-3">
+            {% for n in notifications %}
+            <div class="history-card">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-black text-[var(--text-primary)] text-sm">{{ n.title }}</h3>
+                    <span class="text-[9px] bg-rgba(255,255,255,0.05) border border-[var(--border)] px-2 py-0.5 rounded-md text-[var(--text-muted)] font-mono tracking-widest">
+                        {{ n.created_at.strftime('%H:%M') if n.created_at else '--:--' }}
+                    </span>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] leading-relaxed font-bold">{{ n.message }}</p>
+                
+                <div class="mt-4 pt-3 border-t border-[var(--border-bright)] flex justify-between items-center">
+                    <span class="text-[9px] text-[var(--text-muted)] font-bold flex items-center gap-1.5 opacity-60">
+                        <i class="far fa-calendar-alt"></i> {{ n.created_at.strftime('%Y-%m-%d') if n.created_at else 'تاريخ قديم' }}
+                    </span>
+                    <i class="fas fa-check-double text-[10px] text-[var(--accent)] opacity-60"></i>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-10 border border-dashed border-[var(--border)] rounded-[24px] bg-[var(--bg-card)]">
+                <i class="fas fa-comment-slash text-3xl text-[var(--text-muted)] opacity-30 mb-2 block"></i>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">لم تقم بإرسال أي إشعارات بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ── دالة إظهار وإخفاء قائمة اختيار الزبائن ──
+    function toggleCustomerSelect() {
+        const toggle = document.getElementById('toAllToggle');
+        const selectDiv = document.getElementById('customerSelectDiv');
+        
+        if(typeof playGlassSound === 'function') playGlassSound();
+
+        if (toggle.checked) {
+            selectDiv.classList.remove('show');
+            document.getElementById('userSelect').removeAttribute('required');
+        } else {
+            selectDiv.classList.add('show');
+            document.getElementById('userSelect').setAttribute('required', 'true');
+        }
+    }
+
+    // ── حماية زر الإرسال من الضغط المزدوج ──
+    document.getElementById('notificationForm').onsubmit = function() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>جاري البث...</span>';
+    };
+</script>
+
+{% endblock %}
+

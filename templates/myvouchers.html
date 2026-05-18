@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور التدريجي ── */
+    .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── تصميم التذكرة المصغرة (Apple Wallet Style) ── */
+    .wallet-ticket {
+        background: linear-gradient(145deg, var(--bg-card) 0%, rgba(0,0,0,0.4) 100%);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-bright); border-top: 2px solid var(--accent);
+        border-radius: 32px; position: relative; overflow: hidden;
+        margin-bottom: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .wallet-ticket:active { transform: scale(0.96); border-color: var(--accent); }
+    .wallet-ticket::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, transparent, var(--accent-glow), transparent);
+        opacity: 0; transition: 0.5s; pointer-events: none;
+    }
+    .wallet-ticket:hover::after { opacity: 0.15; }
+
+    /* الخط المنقط والثقوب */
+    .ticket-cut-line {
+        height: 0; border-top: 2px dashed var(--border-bright); opacity: 0.5;
+        margin: 0 24px; position: relative;
+    }
+    .ticket-cut-line::before, .ticket-cut-line::after {
+        content: ''; position: absolute; top: -12px; width: 24px; height: 24px;
+        background-color: var(--bg-primary); border-radius: 50%;
+        box-shadow: inset 0 5px 10px rgba(0,0,0,0.3); z-index: 10;
+    }
+    .ticket-cut-line::after { left: -36px; border-right: 1px solid var(--border-bright); }
+    .ticket-cut-line::before { right: -36px; border-left: 1px solid var(--border-bright); }
+
+    /* ── الباركود الوهمي للزينة ── */
+    .mini-barcode {
+        height: 20px; width: 60%; margin: 10px auto 0;
+        background: repeating-linear-gradient(
+            90deg, var(--text-primary) 0, var(--text-primary) 2px, transparent 2px, transparent 4px,
+            var(--text-primary) 4px, var(--text-primary) 5px, transparent 5px, transparent 8px
+        );
+        opacity: 0.2;
+    }
+
+    /* ── أزرار التذكرة ── */
+    .btn-action-sm {
+        flex: 1; padding: 14px; border-radius: 20px; font-weight: 800; font-size: 13px;
+        display: flex; justify-content: center; align-items: center; gap: 8px;
+        transition: 0.2s; border: 1px solid transparent; outline: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .btn-copy { background: linear-gradient(135deg, var(--accent-light), var(--accent-dark)); color: #000; box-shadow: 0 5px 15px var(--accent-glow); }
+    .btn-copy:active { transform: scale(0.92); }
+
+    .btn-share { background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3); color: #25D366; }
+    .btn-share:active { transform: scale(0.92); background: rgba(37, 211, 102, 0.2); }
+
+    /* ── حالة المحفظة الفارغة ── */
+    .empty-wallet {
+        background: var(--bg-card); border: 2px dashed var(--border-bright);
+        border-radius: 36px; padding: 60px 20px; text-align: center;
+        box-shadow: inset 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .empty-icon-wrap {
+        width: 100px; height: 100px; border-radius: 30px;
+        background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+        margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;
+        border: 1px solid var(--border); box-shadow: 0 10px 25px var(--accent-glow);
+    }
+    .empty-icon { font-size: 3rem; color: var(--accent); opacity: 0.9; }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform">
+            <i class="fas fa-wallet text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">محفظة الكروت</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">تذاكر الإنترنت الخاصة بك المحفوظة والجاهزة للاستخدام</p>
+    </div>
+
+    {% if vouchers %}
+        <div class="space-y-2">
+            {% for v in vouchers %}
+            <div class="wallet-ticket stagger-{{ (loop.index % 3) + 1 }}">
+
+                <div class="p-6 flex justify-between items-start relative z-10">
+                    <div>
+                        <p class="text-[10px] text-[var(--text-muted)] font-bold mb-1 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="far fa-calendar-check opacity-50"></i> {{ v.sold_at.split(' ')[0] if v.sold_at else 'تاريخ الشراء' }}
+                        </p>
+                        <h2 class="text-xl font-black text-[var(--text-primary)]">
+                            {{ v.package.name if v.package else 'باقة إنترنت' }}
+                        </h2>
+                    </div>
+                    <div class="bg-emerald-500/10 text-emerald-400 text-[9px] font-bold px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> جاهز
+                    </div>
+                </div>
+
+                <div class="ticket-cut-line"></div>
+
+                <div class="p-6 text-center bg-black/20 relative z-10">
+                    <p class="text-[9px] text-[var(--accent)] font-bold uppercase tracking-[0.2em] mb-3 opacity-80">كود الدخول المباشر</p>
+                    
+                    <div class="bg-black/30 border border-white/5 rounded-2xl py-4 px-2 mb-6 relative overflow-hidden">
+                        <p class="text-3xl sm:text-4xl font-mono font-black text-[var(--text-primary)] tracking-[0.1em] select-all relative z-10">
+                            {{ v.mikrotik_username }}
+                        </p>
+                        <div class="absolute -right-2 -top-2 opacity-5 text-6xl pointer-events-none"><i class="fas fa-wifi"></i></div>
+                    </div>
+                    
+                    <div class="flex gap-3 relative z-10">
+                        <button onclick="copyWalletCode('{{ v.mikrotik_username }}')" class="btn-action-sm btn-copy" onmousedown="playGlassSound()">
+                            <i class="fas fa-copy text-lg"></i> نسخ الكود
+                        </button>
+
+                        <button onclick="shareWalletCode('{{ v.mikrotik_username }}', '{{ v.package.name if v.package else 'باقة إنترنت' }}')" class="btn-action-sm btn-share" onmousedown="playGlassSound()">
+                            <i class="fab fa-whatsapp text-xl"></i> إرسال لصديق
+                        </button>
+                    </div>
+                    
+                    <div class="mini-barcode"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-wallet stagger-2">
+            <div class="empty-icon-wrap">
+                <i class="fas fa-box-open empty-icon"></i>
+            </div>
+            <h3 class="text-xl font-black text-[var(--text-primary)] mb-2">خزنتك فارغة تماماً!</h3>
+            <p class="text-[12px] text-[var(--text-muted)] font-bold leading-relaxed mb-8 px-4 opacity-70">يبدو أنك لم تقم بشراء أي كرت بعد. انطلق إلى المتجر لاختيار باقتك وتعبئة محفظتك الرقمية.</p>
+
+            <a href="/buy" onclick="playGlassSound()" class="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[var(--accent-light)] to-[var(--accent-dark)] text-black px-8 py-4 rounded-2xl font-black text-sm shadow-[0_10px_25px_var(--accent-glow)] active:scale-95 transition-transform">
+                <i class="fas fa-store"></i> الانتقال للمتجر الآن
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // ── دالة النسخ مع التنبيه الذكي ──
+    function copyWalletCode(text) {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        navigator.clipboard.writeText(text).then(() => {
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            
+            // استدعاء نظام التنبيهات الموجود في base.html
+            const container = document.getElementById('toast-container');
+            if(container) {
+                const toast = document.createElement('div');
+                toast.className = 'global-toast success';
+                toast.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-check-circle text-emerald-400 text-lg"></i>
+                    </div>
+                    <div><p class="text-white text-sm font-bold">تم نسخ الكود بنجاح! 🎟️</p></div>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toast-leave 0.5s forwards';
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
+            } else {
+                alert('✅ تم النسخ بنجاح!');
+            }
+        });
+    }
+
+    // ── دالة المشاركة التسويقية (التي تجلب الصورة في الواتساب) ──
+    function shareWalletCode(code, packageName) {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        const siteUrl = window.location.origin;
+        
+        // الرسالة التسويقية المدمجة برابط الموقع ليتم سحب صورة (Open Graph)
+        const message = `🎟️ *تذكرة إنترنت - عندل ستار VIP*\n\n🔹 *الباقة:* ${packageName}\n🔑 *كود الدخول:* ${code}\n\nنتمنى لك تصفحاً سريعاً وممتعاً! 🚀\n\n👇 حمل التطبيق مجاناً أو ادخل من هنا:\n${siteUrl}`;
+        
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+</script>
+
+{% endblock %}
+

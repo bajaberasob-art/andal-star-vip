@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ── تأثيرات الظهور التدريجي ── */
+    .stagger-1 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+    .stagger-2 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both; }
+    .stagger-3 { animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+
+    /* ── لافتة إشعارات النظام (PWA Push Banner) ── */
+    .push-banner {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 24px; padding: 20px;
+        display: none; /* مخفية افتراضياً حتى نفحص الصلاحيات */
+        align-items: center; justify-content: space-between; gap: 16px;
+        margin-bottom: 24px; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+    }
+    .push-banner.show { display: flex; animation: fadeUp 0.5s ease; }
+
+    /* ── بطاقة الإشعار (Inbox Card) ── */
+    .notif-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 24px; padding: 20px;
+        position: relative; overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer; display: flex; gap: 16px;
+    }
+    .notif-card:active { transform: scale(0.97); }
+
+    /* ستايل الإشعار الجديد (غير المقروء) */
+    .notif-card.unread {
+        background: linear-gradient(145deg, var(--bg-card) 0%, rgba(255,255,255,0.05) 100%);
+        border-color: var(--border-bright);
+        border-right: 4px solid var(--accent);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .notif-card.unread::before {
+        content: ''; position: absolute; top: -50px; right: -50px;
+        width: 100px; height: 100px; background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+        pointer-events: none;
+    }
+
+    .notif-icon-wrap {
+        width: 48px; height: 48px; border-radius: 16px; shrink-0;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+        color: var(--text-muted); transition: 0.3s;
+    }
+    .notif-card.unread .notif-icon-wrap {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+        border-color: var(--accent); color: var(--accent);
+        box-shadow: inset 0 0 10px var(--accent-glow);
+    }
+
+    .unread-dot {
+        width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent); position: absolute; top: 20px; left: 20px;
+        opacity: 0; transition: 0.3s;
+    }
+    .notif-card.unread .unread-dot { opacity: 1; animation: pulseDot 2s infinite; }
+    @keyframes pulseDot { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 var(--accent-glow); } 70% { transform: scale(1); box-shadow: 0 0 0 6px transparent; } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 transparent; } }
+
+    .btn-enable-push {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white;
+        padding: 10px 16px; border-radius: 14px; font-weight: 800; font-size: 11px;
+        border: none; outline: none; cursor: pointer; white-space: nowrap;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+</style>
+
+<div class="px-2 pt-4 pb-24">
+
+    <div class="text-center mb-8 stagger-1">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-[1.2rem] bg-[var(--bg-card)] border border-[var(--border-bright)] mb-3 shadow-[0_10px_20px_var(--glow)] rotate-3 hover:rotate-0 transition-transform relative">
+            <i class="fas fa-bell text-2xl text-[var(--accent)] drop-shadow-[0_0_8px_var(--accent-glow)]"></i>
+            {% set has_unread = notifications | selectattr("is_read", "equalto", False) | list | length > 0 %}
+            {% if has_unread %}
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[var(--bg-primary)] animate-bounce"></div>
+            {% endif %}
+        </div>
+        <h1 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">مركز التنبيهات</h1>
+        <p class="text-xs text-[var(--text-muted)] mt-1">ابقَ على اطلاع بأحدث العروض وحالة حسابك</p>
+    </div>
+
+    <div class="push-banner stagger-2" id="pushBanner">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0 border border-blue-500/30">
+                <i class="fas fa-mobile-alt text-blue-400"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-white mb-1">إشعارات النظام</p>
+                <p class="text-[9px] text-white/70 leading-relaxed">قم بتفعيلها لتصلك رسائلنا وأنت خارج التطبيق (مثل الواتساب).</p>
+            </div>
+        </div>
+        <button onclick="requestPushPermission()" class="btn-enable-push active:scale-95 transition-transform">تفعيل الآن</button>
+    </div>
+
+    {% if notifications %}
+    <div class="space-y-4 stagger-3">
+        {% for n in notifications %}
+        <div class="notif-card {% if not n.is_read %}unread{% endif %}" id="notif-{{ n.id }}" onclick="markAsRead({{ n.id }})">
+            
+            <div class="unread-dot"></div>
+            
+            <div class="notif-icon-wrap">
+                {% if 'نقاط' in n.title or 'هدية' in n.title %}
+                    <i class="fas fa-gift"></i>
+                {% elif 'شراء' in n.title or 'عملية' in n.title %}
+                    <i class="fas fa-shopping-bag"></i>
+                {% elif 'تحذير' in n.title or 'خصم' in n.title %}
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                {% else %}
+                    <i class="fas fa-envelope-open-text"></i>
+                {% endif %}
+            </div>
+
+            <div class="flex-1 relative z-10">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="text-sm font-black text-[var(--text-primary)]">{{ n.title }}</h3>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] leading-relaxed mb-3 pr-2">{{ n.message }}</p>
+                
+                <div class="flex justify-between items-center text-[9px] font-bold text-[var(--text-muted)] opacity-60">
+                    <span class="flex items-center gap-1.5"><i class="far fa-clock"></i> {{ n.created_at.strftime('%Y-%m-%d | %I:%M %p') if n.created_at else 'منذ فترة' }}</span>
+                    <span class="read-status-text">{% if n.is_read %}مقروء{% else %}جديد{% endif %}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="stagger-3 text-center py-20 bg-[var(--bg-card)] border border-[var(--border)] rounded-[32px] mt-4">
+        <div class="relative inline-block mb-6">
+            <div class="absolute inset-0 bg-[var(--accent-glow)] rounded-full blur-2xl animate-pulse"></div>
+            <div class="relative w-20 h-20 bg-[var(--bg-card)] rounded-full flex items-center justify-center mx-auto border border-[var(--border-bright)]">
+                <i class="fas fa-bell-slash text-3xl text-[var(--accent)] opacity-50"></i>
+            </div>
+        </div>
+        <h3 class="text-lg font-black text-[var(--text-primary)] mb-2">الهدوء يعم المكان!</h3>
+        <p class="text-[11px] text-[var(--text-muted)] px-8">لا توجد لديك أي إشعارات أو رسائل جديدة في الوقت الحالي.</p>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-8 stagger-3">
+        <button onclick="testSystemNotification()" id="testPushBtn" style="display: none;" class="text-[10px] text-[var(--accent)] bg-[var(--accent-glow)] px-4 py-2 rounded-full border border-[var(--accent)] font-bold">
+            <i class="fas fa-flask"></i> تجربة إشعار في الهاتف
+        </button>
+    </div>
+
+</div>
+
+<script>
+    // ── 1. نظام تحويل الإشعار إلى مقروء (AJAX) ──
+    async function markAsRead(id) {
+        const card = document.getElementById('notif-' + id);
+        if(!card.classList.contains('unread')) return; // إذا كان مقروء مسبقاً، تجاهل
+        
+        if(typeof playGlassSound === 'function') playGlassSound();
+
+        // إزالة التوهج والنقطة فوراً من الشاشة (تجربة مستخدم سريعة)
+        card.classList.remove('unread');
+        card.querySelector('.read-status-text').innerText = 'مقروء';
+
+        try {
+            // إرسال طلب للخلفية لتحديث قاعدة البيانات بصمت
+            await fetch('/mark_read/' + id);
+        } catch(e) {
+            console.error("فشل التحديث في السيرفر", e);
+        }
+    }
+
+    // ── 2. هندسة إشعارات نظام الهاتف (PWA Push Notifications Bridge) ──
+    document.addEventListener("DOMContentLoaded", () => {
+        checkNotificationStatus();
+    });
+
+    function checkNotificationStatus() {
+        if (!("Notification" in window)) {
+            console.log("هذا المتصفح لا يدعم إشعارات النظام.");
+            return;
+        }
+        
+        // إذا لم يعطِ المستخدم الصلاحية بعد، نظهر له اللافتة
+        if (Notification.permission === "default") {
+            document.getElementById('pushBanner').classList.add('show');
+        } else if (Notification.permission === "granted") {
+            // إذا أعطى الصلاحية، نظهر له زر التجربة
+            document.getElementById('testPushBtn').style.display = 'inline-block';
+        }
+    }
+
+    function requestPushPermission() {
+        if(typeof playGlassSound === 'function') playGlassSound();
+        
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                document.getElementById('pushBanner').classList.remove('show');
+                document.getElementById('testPushBtn').style.display = 'inline-block';
+                
+                // إظهار تنبيه داخلي بالنجاح
+                const container = document.getElementById('toast-container');
+                if(container) {
+                    const toast = document.createElement('div');
+                    toast.className = 'global-toast success';
+                    toast.innerHTML = `<div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0"><i class="fas fa-check text-emerald-400 text-lg"></i></div><div><p class="text-white text-sm font-bold">تم ربط الهاتف بنجاح! 📱</p></div>`;
+                    container.appendChild(toast);
+                }
+                
+                // إرسال أول إشعار ترحيبي لنظام الهاتف!
+                setTimeout(() => {
+                    new Notification("عندل ستار VIP", {
+                        body: "مرحباً بك! إشعارات النظام تعمل الآن بنجاح.",
+                        icon: "https://cdn-icons-png.flaticon.com/512/1828/1828210.png" // يمكن استبدالها بلوجو موقعك
+                    });
+                }, 1000);
+
+            } else {
+                alert("تم رفض الصلاحية. لن تصلك الإشعارات خارج التطبيق.");
+            }
+        });
+    }
+
+    // دالة تجربة الإشعارات
+    function testSystemNotification() {
+        if (Notification.permission === "granted") {
+            if(navigator.vibrate) navigator.vibrate(50);
+            new Notification("عيدية من عندل ستار 🎁", {
+                body: "تم إضافة 50 نقطة مجانية لرصيدك! ادخل الآن للاستمتاع بها.",
+                badge: "https://cdn-icons-png.flaticon.com/512/1828/1828210.png"
+            });
+        }
+    }
+</script>
+
+{% endblock %}
+
