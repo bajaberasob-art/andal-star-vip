@@ -29,8 +29,15 @@ app = Flask(__name__)
 
 # ================== إعدادات التطبيق والبروكسي ==================
 app.config['SECRET_KEY'] = 'abdullah-voucher-system-2026-final'
-# لاحظ تغيير اسم المستخدم ليتضمن معرف المشروع (ضروري للـ Pooler)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.hlepldoaxayyazklvthv:AndalStar2026@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres?sslmode=require'
+# الاتصال بقاعدة البيانات الجديدة السريعة (فرانكفورت)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.fzhqqhaeygcjvpigqtti:AndalStar2026@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require'
+
+# خيارات تسريع المحرك (Connection Pooling) لإبقاء الاتصال حياً وسريعاً
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 10,
+    'pool_recycle': 1800,
+    'pool_pre_ping': True
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # إخبار Flask بالوثوق بـ Cloudflare والأنفاق (لحل مشكلة HTTP/HTTPS)
