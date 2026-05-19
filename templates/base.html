@@ -8,19 +8,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="عندل ستار">
     <meta name="theme-color" content="#06050a" id="meta-theme-color">
+    
     <link rel="manifest" href="/static/manifest.json">
-    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
 
     <meta property="og:title" content="شبكة عندل ستار VIP ⌬">
     <meta property="og:description" content="بوابتك الفاخرة لإدارة اشتراكات الإنترنت، شراء الكروت، وتحويل الرصيد بلمسة زر واحدة.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512.png', _external=True) }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='icon-512.png', _external=True) }}">
     <meta property="og:site_name" content="Andal Star VIP">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="شبكة عندل ستار VIP ⌬">
     <meta name="twitter:description" content="بوابتك الفاخرة لإدارة اشتراكات الإنترنت، شراء الكروت، وتحويل الرصيد بلمسة زر واحدة.">
-    <meta name="twitter:image" content="{{ url_for('static', filename='icons/icon-512.png', _external=True) }}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='icon-512.png', _external=True) }}">
+
     <title>{% block title %}عندل ستار | النظام الملكي{% endblock %}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -59,7 +62,7 @@
         body.theme-4 { --bg-primary: #07040e; --bg-secondary: #110820; --bg-card: rgba(16, 10, 32, 0.8); --accent: #9b72cf; --accent-light: #c09aee; --accent-dark: #6b42a0; --accent-glow: rgba(155, 114, 207, 0.45); --glow: rgba(155, 114, 207, 0.12); --orb-1: #9b72cf; --orb-2: #4a1a80; --text-primary: #e8d8f8; --text-muted: rgba(232, 216, 248, 0.55); --border: rgba(155, 114, 207, 0.18); --border-bright: rgba(155, 114, 207, 0.4); --line: rgba(155, 114, 207, 0.25); --nav-bg: rgba(7, 4, 14, 0.95); }
         body.theme-5 { --bg-primary: #0a0305; --bg-secondary: #1c0608; --bg-card: rgba(28, 8, 10, 0.8); --accent: #c94a5a; --accent-light: #e87080; --accent-dark: #9a2030; --accent-glow: rgba(201, 74, 90, 0.45); --glow: rgba(201, 74, 90, 0.12); --orb-1: #c94a5a; --orb-2: #7a1020; --text-primary: #f8d8dc; --text-muted: rgba(248, 216, 220, 0.55); --border: rgba(201, 74, 90, 0.18); --border-bright: rgba(201, 74, 90, 0.4); --line: rgba(201, 74, 90, 0.25); --nav-bg: rgba(10, 3, 5, 0.95); }
         body.theme-6 { --bg-primary: #f5f0e8; --bg-secondary: #ede5d5; --bg-card: rgba(255, 252, 245, 0.9); --accent: #8a6420; --accent-light: #b08030; --accent-dark: #5a4010; --accent-glow: rgba(138, 100, 32, 0.35); --glow: rgba(138, 100, 32, 0.08); --orb-1: #c9a84c; --orb-2: #e8d4a0; --text-primary: #1a1208; --text-muted: rgba(26, 18, 8, 0.55); --border: rgba(138, 100, 32, 0.2); --border-bright: rgba(138, 100, 32, 0.45); --line: rgba(138, 100, 32, 0.2); --nav-bg: rgba(240, 233, 218, 0.98); }
-
+        
         *, *::before, *::after { box-sizing: border-box; }
 
         body {
@@ -120,7 +123,6 @@
             content: ''; position: absolute; bottom: 0; left: 5%; right: 5%; height: 1px;
             background: linear-gradient(90deg, transparent, var(--line), var(--accent-glow), var(--line), transparent);
         }
-
         .brand-logo {
             width: 52px; height: 52px; border-radius: 16px;
             background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
@@ -129,8 +131,7 @@
         }
         .brand-logo-symbol { font-size: 22px; color: var(--accent); filter: drop-shadow(0 0 8px var(--accent-glow)); z-index: 1; }
         .brand-name { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.7rem; color: var(--text-primary); line-height: 1; }
-        .brand-tagline { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.9; }
-
+        .brand-tagline { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.9; } 
         .header-btn {
             width: 44px; height: 44px; border-radius: 14px; background: var(--bg-card); border: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center; color: var(--accent);
@@ -171,7 +172,7 @@
         }
         .nav-item i { font-size: 1.3rem; margin-bottom: 4px; transition: 0.3s; }
         .nav-item span { font-size: 10px; font-weight: 700; opacity: 0; transform: translateY(10px); transition: 0.3s; position: absolute; bottom: 8px;}
-        
+
         .nav-item.active { color: var(--accent) !important; }
         .nav-item.active i { transform: translateY(-12px); filter: drop-shadow(0 4px 6px var(--accent-glow)); }
         .nav-item.active span { opacity: 1; transform: translateY(0); }
@@ -184,7 +185,6 @@
         /* ═══════════════════════════════════════════════
            عناصر النظام (Toasts, Loader, Network)
         ═══════════════════════════════════════════════ */
-        /* رادار الشبكة (Offline Badge) */
         #offline-badge {
             position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white;
             text-align: center; font-size: 12px; font-weight: bold; padding: 4px; z-index: 9999;
@@ -192,7 +192,6 @@
         }
         #offline-badge.show { transform: translateY(0); }
 
-        /* شاشة التحميل الزجاجية (Page Loader) */
         #page-loader {
             position: fixed; inset: 0; background: var(--bg-primary); z-index: 99999;
             display: flex; align-items: center; justify-content: center;
@@ -204,7 +203,6 @@
             animation: spin 1s linear infinite;
         }
 
-        /* نظام الإشعارات الموحد (Global Toasts) */
         .global-toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9000; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
         .global-toast {
             background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border);
@@ -231,25 +229,23 @@
         showUserMenu: false,
         themeId: localStorage.getItem('andal-theme') || 1,
         greetingText: 'مرحباً بك',
-        
+
         init() {
             this.applyTheme(this.themeId);
             this.updateTimeAwareUI();
-            
-            // إخفاء شاشة التحميل بعد اكتمال الصفحة
+
             window.addEventListener('load', () => {
                 const loader = document.getElementById('page-loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.visibility = 'hidden', 500);
             });
         },
-        
+
         applyTheme(id) {
             this.themeId = id;
             const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-') && c !== '');
             document.body.className = [...classes, `theme-${id}`].join(' ');
 
-            // تحديث لون الستاتس بار في الجوال
             const themeColors = {1: '#06050a', 2: '#03050f', 3: '#030a06', 4: '#07040e', 5: '#0a0305', 6: '#f5f0e8'};
             document.getElementById('meta-theme-color').content = themeColors[id];
 
@@ -459,16 +455,16 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('✅ PWA Active: Service Worker Registered', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('❌ PWA Error: Service Worker Registration Failed', error);
-                    });
+                .then(registration => {
+                    console.log('✅ PWA Active: Service Worker Registered', registration.scope);
+                })
+                .catch(error => {
+                    console.error('❌ PWA Error: Service Worker Registration Failed', error);
+                });
             });
         }
     </script>
-
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>
