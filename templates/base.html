@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="عندل ستار">
     <meta name="theme-color" content="#06050a" id="meta-theme-color">
-    
+
     <link rel="manifest" href="/static/manifest.json">
     <link rel="apple-touch-icon" href="/static/icon-192.png">
 
@@ -62,7 +61,7 @@
         body.theme-4 { --bg-primary: #07040e; --bg-secondary: #110820; --bg-card: rgba(16, 10, 32, 0.8); --accent: #9b72cf; --accent-light: #c09aee; --accent-dark: #6b42a0; --accent-glow: rgba(155, 114, 207, 0.45); --glow: rgba(155, 114, 207, 0.12); --orb-1: #9b72cf; --orb-2: #4a1a80; --text-primary: #e8d8f8; --text-muted: rgba(232, 216, 248, 0.55); --border: rgba(155, 114, 207, 0.18); --border-bright: rgba(155, 114, 207, 0.4); --line: rgba(155, 114, 207, 0.25); --nav-bg: rgba(7, 4, 14, 0.95); }
         body.theme-5 { --bg-primary: #0a0305; --bg-secondary: #1c0608; --bg-card: rgba(28, 8, 10, 0.8); --accent: #c94a5a; --accent-light: #e87080; --accent-dark: #9a2030; --accent-glow: rgba(201, 74, 90, 0.45); --glow: rgba(201, 74, 90, 0.12); --orb-1: #c94a5a; --orb-2: #7a1020; --text-primary: #f8d8dc; --text-muted: rgba(248, 216, 220, 0.55); --border: rgba(201, 74, 90, 0.18); --border-bright: rgba(201, 74, 90, 0.4); --line: rgba(201, 74, 90, 0.25); --nav-bg: rgba(10, 3, 5, 0.95); }
         body.theme-6 { --bg-primary: #f5f0e8; --bg-secondary: #ede5d5; --bg-card: rgba(255, 252, 245, 0.9); --accent: #8a6420; --accent-light: #b08030; --accent-dark: #5a4010; --accent-glow: rgba(138, 100, 32, 0.35); --glow: rgba(138, 100, 32, 0.08); --orb-1: #c9a84c; --orb-2: #e8d4a0; --text-primary: #1a1208; --text-muted: rgba(26, 18, 8, 0.55); --border: rgba(138, 100, 32, 0.2); --border-bright: rgba(138, 100, 32, 0.45); --line: rgba(138, 100, 32, 0.2); --nav-bg: rgba(240, 233, 218, 0.98); }
-        
+
         *, *::before, *::after { box-sizing: border-box; }
 
         body {
@@ -131,7 +130,7 @@
         }
         .brand-logo-symbol { font-size: 22px; color: var(--accent); filter: drop-shadow(0 0 8px var(--accent-glow)); z-index: 1; }
         .brand-name { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.7rem; color: var(--text-primary); line-height: 1; }
-        .brand-tagline { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.9; } 
+        .brand-tagline { font-size: 11px; font-weight: 600; color: var(--accent); opacity: 0.9; }
         .header-btn {
             width: 44px; height: 44px; border-radius: 14px; background: var(--bg-card); border: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center; color: var(--accent);
@@ -463,6 +462,52 @@
                 });
             });
         }
+
+        // ── تفعيل إشعارات الهاتف (Web Push) ──
+        async function subscribeToPush() {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const publicVapidKey = 'BINKXL801WkmNxQZ2PVgJMw2VxLNAT0CNKAjPe-Nhv2JuCE1VJ7WvnAaPGk-skHyVMVsXGTo38THm6L7L7rPiX0';
+
+                    const urlBase64ToUint8Array = (base64String) => {
+                        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                        const rawData = window.atob(base64);
+                        const outputArray = new Uint8Array(rawData.length);
+                        for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+                        return outputArray;
+                    };
+
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                    });
+
+                    await fetch('/api/save-subscription', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ subscription: subscription })
+                    });
+                    console.log("✅ Push Subscription Saved!");
+                } catch (err) {
+                    console.error("❌ Push Subscription Failed: ", err);
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            // نطلب الإذن فقط إذا كان المستخدم مسجل دخوله (يمكنك تعديل هذا الشرط لو أردت)
+            {% if session.get('user_id') %}
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') { subscribeToPush(); }
+                });
+            } else if (Notification.permission === 'granted') {
+                subscribeToPush();
+            }
+            {% endif %}
+        });
     </script>
     
     {% block scripts %}{% endblock %}
