@@ -55,21 +55,31 @@ self.addEventListener('fetch', (event) => {
 // 4. استلام إشعارات الهاتف (Push Notifications)
 self.addEventListener('push', (event) => {
     // إعدادات الإشعار الافتراضية
-    let data = { 
-        title: 'عندل ستار VIP', 
-        body: 'لديك إشعار جديد!', 
-        url: '/notifications' 
+    let data = {
+        title: 'عندل ستار VIP ⌬',
+        body: 'لديك إشعار جديد من النظام!',
+        url: '/notifications'
     };
 
     if (event.data) {
-        data = event.data.json();
+        try {
+            // معالجة البيانات إذا كانت بصيغة JSON
+            data = event.data.json();
+        } catch (e) {
+            // نظام حماية: إذا أرسل السيرفر نصاً عادياً يتم اعتماده مباشرة بدون انهيار الكود
+            data = {
+                title: 'عندل ستار VIP ⌬',
+                body: event.data.text(),
+                url: '/notifications'
+            };
+        }
     }
-    
+
     const options = {
         body: data.body,
-        // icon: '/static/icons/icon-192.png', // سيتم تفعيلها بعد وضع الأيقونات
-        // badge: '/static/icons/icon-192.png',
-        vibrate: [200, 100, 200, 100, 200], // اهتزاز ملكي متعاقب
+        icon: '/static/icon-192.png',        // تم التفعيل وتعديل المسار المباشر للشعار
+        badge: '/static/icon-192.png',       // الأيقونة الصغيرة المخصصة لشريط إشعارات الهاتف العلوي
+        vibrate: [200, 100, 200, 100, 200],  // نمط الاهتزاز الملكي المتناسق
         data: { url: data.url },
         dir: 'rtl'
     };
@@ -91,7 +101,7 @@ self.addEventListener('notificationclick', (event) => {
                     return client.focus();
                 }
             }
-            // إذا كان التطبيق مغلقاً تماماً، افتحه على صفحة الإشعار
+            // إذا كان التطبيق مغلقاً تماماً، افتحه على صفحة الإشعار مباشرة
             if (clients.openWindow) {
                 return clients.openWindow(event.notification.data.url);
             }
