@@ -463,6 +463,26 @@
             });
         }
 
+        // ── دالة مساعدة لظهور التنبيهات المنبثقة للـ Web Push ──
+        function showAppToast(message, type='success') {
+            const container = document.getElementById('toast-container');
+            if(!container) return;
+            const toast = document.createElement('div');
+            toast.className = `global-toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                    <i class="fas ${icon} text-lg" style="color: ${type === 'success' ? '#10b981' : '#ef4444'}"></i>
+                </div>
+                <div><p class="text-white text-sm font-bold">${message}</p></div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toast-leave 0.5s forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
         // ── تفعيل إشعارات الهاتف (Web Push) ──
         async function subscribeToPush() {
             if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -484,32 +504,52 @@
                         applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
                     });
 
-                    await fetch('/api/save-subscription', {
+                    const response = await fetch('/api/save-subscription', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ subscription: subscription })
                     });
-                    console.log("✅ Push Subscription Saved!");
+                    
+                    if(response.ok) {
+                        showAppToast("✅ تم تفعيل إشعارات الهاتف بنجاح!");
+                        const btn = document.getElementById('push-prompt-btn');
+                        if(btn) btn.style.display = 'none'; // إخفاء الزر بعد النجاح
+                    }
                 } catch (err) {
                     console.error("❌ Push Subscription Failed: ", err);
+                    showAppToast("❌ فشل تفعيل الإشعارات، تأكد من إعدادات المتصفح.", "error");
                 }
             }
         }
 
+        // ── طلب الإذن عند ضغط الزر ──
+        function requestPushPermission() {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') { 
+                    subscribeToPush();
+                } else {
+                    showAppToast("❌ لقد قمت برفض الإشعارات!", "error");
+                }
+            });
+        }
+
         window.addEventListener('load', () => {
-            // نطلب الإذن فقط إذا كان المستخدم مسجل دخوله (يمكنك تعديل هذا الشرط لو أردت)
             {% if session.get('user_id') %}
             if (Notification.permission === 'default') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') { subscribeToPush(); }
-                });
+                // إنشاء الزر الذهبي العائم
+                const btn = document.createElement('button');
+                btn.id = 'push-prompt-btn';
+                btn.innerHTML = '<i class="fa-solid fa-bell-ring"></i> تفعيل إشعارات التطبيق';
+                btn.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-[var(--accent)] text-[var(--bg-primary)] px-5 py-2.5 rounded-full font-bold shadow-[0_0_15px_var(--accent-glow)] z-[9999] animate-bounce flex items-center gap-2';
+                btn.onclick = requestPushPermission;
+                document.body.appendChild(btn);
             } else if (Notification.permission === 'granted') {
+                // إذا كان مفعل مسبقاً، يجدد الاشتراك بصمت
                 subscribeToPush();
             }
             {% endif %}
         });
     </script>
-    
     {% block scripts %}{% endblock %}
 </body>
 </html>
