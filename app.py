@@ -296,6 +296,17 @@ def home():
         return redirect('/admin/dashboard' if session.get('role') == 'admin' else '/dashboard')       
     return redirect('/login')
 
+def login():
+    if request.method == 'POST':
+        user = User.query.filter_by(phone=request.form['phone']).first()
+        if user and check_password_hash(user.password_hash, request.form['password']):
+            session['user_id'] = user.id
+            session['role'] = user.role
+            session['full_name'] = user.full_name
+            flash(f'مرحباً {user.full_name} 👋', 'success')
+            return redirect(url_for('home'))
+        flash('بيانات خاطئة', 'error')                                                                
+    return render_template('login.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -307,7 +318,7 @@ def login():
             flash(f'مرحباً {user.full_name} 👋', 'success')
             return redirect(url_for('home'))
         flash('بيانات خاطئة', 'error')                                                                
-        return render_template('login.html')
+    return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
