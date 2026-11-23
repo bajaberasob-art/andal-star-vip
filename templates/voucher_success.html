@@ -167,7 +167,7 @@
             <span>نسخ الكود</span>
         </button>
         <button onclick="shareVoucher()" class="action-btn btn-share" onmousedown="playGlassSound()">
-            <i class="fab fa-whatsapp text-xl"></i>
+            <i class="fas fa-share-nodes text-xl"></i>
             <span>مشاركة</span>
         </button>
         <button onclick="window.print()" class="action-btn btn-print" onmousedown="playGlassSound()">
@@ -235,16 +235,37 @@
         });
     }
 
-    // ── دالة المشاركة التسويقية عبر واتساب (النسخة الفيروسية) ──
+    // ── مشاركة بيانات الكرت عبر قائمة تطبيقات الهاتف ──
     function shareVoucher() {
-        if(typeof playGlassSound === 'function') playGlassSound(); // إضافة الصوت
+        if (typeof playGlassSound === 'function') playGlassSound();
+
+        const packageName = {{ package.name | tojson }};
+        const voucherCode = {{ voucher.mikrotik_username | tojson }};
+        const purchaseDate = {{ (voucher.sold_at.split(' ')[0] if voucher.sold_at else 'اليوم') | tojson }};
         const siteUrl = window.location.origin;
-        
-        // النص التسويقي الذي يظهر الرابط بشكل فخم في الواتساب
-        const msg = `🎟️ *تذكرة إنترنت - عندل ستار VIP*\n\n🔹 *الباقة:* {{ package.name }}\n🔑 *كود الدخول:* ${"{{ voucher.mikrotik_username }}"}\n\nنتمنى لك تصفحاً سريعاً وممتعاً! 🚀\n\n👇 حمل التطبيق مجاناً أو ادخل من هنا:\n${siteUrl}`;
-        
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+
+        const message = [
+            '✨ تمت عملية الشراء بنجاح من عندل ستار',
+            '🌐 عندل ستار | بطاقات الإنترنت',
+            '',
+            '📦 الباقة: ' + packageName,
+            '🔐 كود الدخول: ' + voucherCode,
+            '💳 المبلغ المدفوع: {{ final_price | round(0) | int }} ر.ي',
+            '📅 تاريخ الشراء: ' + purchaseDate,
+            '',
+            'احتفظ بهذه الرسالة لتسهيل الرجوع إلى بيانات الكرت.',
+            'شكراً لثقتك بنا 💙',
+            '',
+            '🌐 ' + siteUrl
+        ].join('\\n');
+
+        if (typeof window.shareWithApps === 'function') {
+            window.shareWithApps('تفاصيل كرت عندل ستار', message);
+        } else {
+            alert('ميزة المشاركة غير متاحة حالياً. حدّث الصفحة ثم حاول مرة أخرى.');
+        }
     }
+
 </script>
 
 {% endblock %}
