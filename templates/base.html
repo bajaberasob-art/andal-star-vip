@@ -429,6 +429,43 @@
             } catch(e) {}
         }
 
+        // ── مشاركة المحتوى عبر قائمة التطبيقات الأصلية في الجهاز ──
+        window.shareWithApps = async function(title, text) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: title, text: text });
+                    return true;
+                } catch (error) {
+                    // إغلاق قائمة المشاركة من المستخدم ليس خطأ.
+                    if (error && error.name === 'AbortError') return false;
+                    console.error('Native sharing failed:', error);
+                    showAppToast('تعذر فتح قائمة المشاركة. حاول مرة أخرى.', 'error');
+                    return false;
+                }
+            }
+
+            // بديل للمتصفحات التي لا تدعم المشاركة الأصلية: نسخ الرسالة كاملة.
+            try {
+                const temp = document.createElement('textarea');
+                temp.value = text;
+                temp.setAttribute('readonly', '');
+                temp.style.position = 'fixed';
+                temp.style.opacity = '0';
+                document.body.appendChild(temp);
+                temp.select();
+                const copied = document.execCommand('copy');
+                temp.remove();
+
+                if (!copied) throw new Error('Clipboard fallback was rejected');
+                showAppToast('تم نسخ رسالة الكرت. الصقها في التطبيق الذي تفضله.');
+                return true;
+            } catch (error) {
+                console.error('Sharing fallback failed:', error);
+                showAppToast('لم نتمكن من تجهيز رسالة المشاركة. حاول نسخ الكود يدوياً.', 'error');
+                return false;
+            }
+        };
+
         // ── تحديد الصفحة النشطة في الشريط السفلي ──
         document.addEventListener('DOMContentLoaded', function() {
             const path = window.location.pathname;
