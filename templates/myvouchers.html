@@ -120,8 +120,14 @@
                             <i class="fas fa-copy text-lg"></i> نسخ الكود
                         </button>
 
-                        <button onclick="shareWalletCode('{{ v.mikrotik_username }}', '{{ v.package.name if v.package else 'باقة إنترنت' }}')" class="btn-action-sm btn-share" onmousedown="playGlassSound()">
-                            <i class="fab fa-whatsapp text-xl"></i> إرسال لصديق
+                        <button type="button"
+                                onclick="shareWalletCode(this)"
+                                data-voucher-code="{{ v.mikrotik_username }}"
+                                data-package-name="{{ v.package.name if v.package else 'باقة إنترنت' }}"
+                                data-purchase-date="{{ v.sold_at.split(' ')[0] if v.sold_at else 'غير محدد' }}"
+                                class="btn-action-sm btn-share"
+                                aria-label="مشاركة تفاصيل الكرت">
+                            <i class="fas fa-share-nodes text-lg"></i> مشاركة
                         </button>
                     </div>
                     
@@ -174,17 +180,36 @@
         });
     }
 
-    // ── دالة المشاركة التسويقية (التي تجلب الصورة في الواتساب) ──
-    function shareWalletCode(code, packageName) {
-        if(typeof playGlassSound === 'function') playGlassSound();
+    // ── مشاركة الكرت عبر قائمة تطبيقات الهاتف ──
+    function shareWalletCode(button) {
+        if (typeof playGlassSound === 'function') playGlassSound();
+
+        const code = button.dataset.voucherCode || '';
+        const packageName = button.dataset.packageName || 'باقة إنترنت';
+        const purchaseDate = button.dataset.purchaseDate || 'غير محدد';
         const siteUrl = window.location.origin;
-        
-        // الرسالة التسويقية المدمجة برابط الموقع ليتم سحب صورة (Open Graph)
-        const message = `🎟️ *تذكرة إنترنت - عندل ستار VIP*\n\n🔹 *الباقة:* ${packageName}\n🔑 *كود الدخول:* ${code}\n\nنتمنى لك تصفحاً سريعاً وممتعاً! 🚀\n\n👇 حمل التطبيق مجاناً أو ادخل من هنا:\n${siteUrl}`;
-        
-        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+
+        const message = [
+            '🎟️ بطاقة إنترنت من عندل ستار',
+            '🌐 عندل ستار | بطاقات الإنترنت',
+            '',
+            '📦 الباقة: ' + packageName,
+            '🔐 كود الدخول: ' + code,
+            '📅 تاريخ الشراء: ' + purchaseDate,
+            '',
+            'احتفظ بهذه الرسالة للرجوع إلى بيانات الكرت.',
+            'نتمنى لك اتصالاً سريعاً وتجربة ممتعة 🚀',
+            '',
+            '🌐 ' + siteUrl
+        ].join('\n');
+
+        if (typeof window.shareWithApps === 'function') {
+            window.shareWithApps('بطاقة إنترنت - عندل ستار', message);
+        } else {
+            alert('ميزة المشاركة غير متاحة حالياً. حدّث الصفحة ثم حاول مرة أخرى.');
+        }
     }
+
 </script>
 
 {% endblock %}
