@@ -249,12 +249,14 @@
 
         applyTheme(id) {
             id = String(id);
-            if (!/^[1-8]$/.test(id) || id === this.themeId) {
+            const themeColors = {'1':'#09080d','2':'#071426','3':'#07150f','4':'#100b20','5':'#16090d','6':'#f4f0e8','7':'#15191e','8':'#06171b'};
+            if (!/^[1-8]$/.test(id)) id = '1';
+            if (id === this.themeId) {
                 this.showThemePicker = false;
+                if (!document.body.classList.contains(`theme-${id}`)) this.setThemeNow(id, themeColors);
                 return;
             }
             const curtain = document.getElementById('theme-transition');
-            const themeColors = {'1':'#09080d','2':'#071426','3':'#07150f','4':'#100b20','5':'#16090d','6':'#f4f0e8','7':'#15191e','8':'#06171b'};
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             this.showThemePicker = false;
             playGlassSound();
