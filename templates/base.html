@@ -28,12 +28,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;900&family=Changa:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800;900&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script>
         const savedTheme = localStorage.getItem('andal-theme');
-        if(savedTheme === '6') document.documentElement.style.backgroundColor = '#f5f0e8';
+        const themeBackgrounds = {'1':'#09080d','2':'#071426','3':'#07150f','4':'#100b20','5':'#16090d','6':'#f4f0e8','7':'#15191e','8':'#06171b'};
+        document.documentElement.style.backgroundColor = themeBackgrounds[savedTheme] || '#09080d';
     </script>
 
     <script>
@@ -226,7 +228,18 @@
 
 <body x-data="{
         showUserMenu: false,
-        themeId: localStorage.getItem('andal-theme') || 1,
+        showThemePicker: false,
+        themeId: String(localStorage.getItem('andal-theme') || '1'),
+        themeOptions: [
+            {id:'1',name:'Royal Prestige',ar:'الفخامة الملكية',desc:'ذهبي عميق وتفاصيل راقية',color:'#c9a84c',surface:'#17131d',font:'Cormorant + Cairo'},
+            {id:'2',name:'Midnight Tech',ar:'التقنية الليلية',desc:'أزرق تقني وتخطيط هندسي',color:'#55a9ff',surface:'#0d1e35',font:'IBM Plex Sans Arabic'},
+            {id:'3',name:'Emerald Life',ar:'الزمرد العصري',desc:'أخضر هادئ ومساحات مريحة',color:'#43c58a',surface:'#10251d',font:'Tajawal'},
+            {id:'4',name:'Nebula',ar:'عالم المستقبل',desc:'بنفسجي فضائي وتوزيع شبكي',color:'#b38aff',surface:'#1b1230',font:'Changa'},
+            {id:'5',name:'Ruby Edge',ar:'الجرأة الحمراء',desc:'أحمر قوي وعناصر حادة',color:'#ff526c',surface:'#281017',font:'Alexandria'},
+            {id:'6',name:'Ivory Minimal',ar:'البساطة الراقية',desc:'عاجي نظيف وخطوط تحريرية',color:'#98702e',surface:'#fffaf0',font:'Noto Kufi Arabic'},
+            {id:'7',name:'Titanium',ar:'المعدن الصناعي',desc:'فضي وفحمي وتفاصيل هندسية',color:'#aebbc8',surface:'#222a32',font:'IBM Plex Sans Arabic'},
+            {id:'8',name:'Cyber Pulse',ar:'النبض السيبراني',desc:'تركواز نيون وحركة مستقبلية',color:'#20e5dc',surface:'#08252a',font:'Readex Pro'}
+        ],
         greetingText: 'مرحباً بك',
 
         init() {
@@ -241,22 +254,46 @@
         },
 
         applyTheme(id) {
+            id = String(id);
+            if (!/^[1-8]$/.test(id) || id === this.themeId) {
+                this.showThemePicker = false;
+                return;
+            }
+            const curtain = document.getElementById('theme-transition');
+            const themeColors = {'1':'#09080d','2':'#071426','3':'#07150f','4':'#100b20','5':'#16090d','6':'#f4f0e8','7':'#15191e','8':'#06171b'};
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            this.showThemePicker = false;
+            playGlassSound();
+            if (reduceMotion || !curtain) {
+                this.setThemeNow(id, themeColors);
+                return;
+            }
+            curtain.classList.remove('is-revealing');
+            curtain.classList.add('is-covering');
+            curtain.setAttribute('aria-hidden', 'false');
+            window.setTimeout(() => {
+                this.setThemeNow(id, themeColors);
+                curtain.classList.remove('is-covering');
+                curtain.classList.add('is-revealing');
+                window.setTimeout(() => {
+                    curtain.classList.remove('is-revealing');
+                    curtain.setAttribute('aria-hidden', 'true');
+                }, 620);
+            }, 360);
+        },
+
+        setThemeNow(id, themeColors) {
             this.themeId = id;
             const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-') && c !== '');
             document.body.className = [...classes, `theme-${id}`].join(' ');
-
-            const themeColors = {1: '#06050a', 2: '#03050f', 3: '#030a06', 4: '#07040e', 5: '#0a0305', 6: '#f5f0e8'};
             document.getElementById('meta-theme-color').content = themeColors[id];
-
+            document.documentElement.style.backgroundColor = themeColors[id];
             this.updateTimeAwareUI();
             localStorage.setItem('andal-theme', id);
         },
 
         nextTheme() {
-            let nextId = parseInt(this.themeId) + 1;
-            if (nextId > 6) nextId = 1;
-            this.applyTheme(nextId);
-            playGlassSound();
+            this.showThemePicker = true;
         },
 
         updateTimeAwareUI() {
@@ -279,6 +316,43 @@
     <div id="page-loader">
         <div class="loader-spinner"></div>
     </div>
+
+    <div id="theme-transition" class="theme-transition" aria-hidden="true">
+        <div class="theme-transition__veil"></div>
+        <div class="theme-transition__beam"></div>
+        <div class="theme-transition__core"><span>ANDAL STAR</span><i class="fa-solid fa-sparkles"></i></div>
+    </div>
+
+    <section class="theme-picker-backdrop" x-show="showThemePicker" x-cloak
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             @click.self="showThemePicker = false" @keydown.escape.window="showThemePicker = false"
+             role="dialog" aria-modal="true" aria-label="اختيار الثيم">
+        <div class="theme-picker-panel" x-show="showThemePicker"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-6 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+            <div class="theme-picker-head">
+                <div><span class="theme-picker-kicker">PERSONALIZE YOUR SPACE</span><h2>اختر هويتك</h2><p>ثماني تجارب مختلفة.. اختر الشكل الذي يشبهك</p></div>
+                <button type="button" class="theme-picker-close" @click="showThemePicker = false" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="theme-picker-grid">
+                <template x-for="theme in themeOptions" :key="theme.id">
+                    <button type="button" class="theme-choice" :class="{'is-selected': themeId === theme.id}"
+                            @click="applyTheme(theme.id)" :aria-pressed="themeId === theme.id">
+                        <span class="theme-choice-preview" :style="'--preview-accent:'+theme.color+';--preview-surface:'+theme.surface">
+                            <span class="preview-top"></span><span class="preview-card"></span><span class="preview-lines"></span><span class="preview-nav"><i></i><i></i><i></i></span>
+                        </span>
+                        <span class="theme-choice-copy"><strong x-text="theme.name"></strong><small x-text="theme.ar"></small><small class="theme-choice-desc" x-text="theme.desc"></small></span>
+                        <i class="fa-solid fa-circle-check theme-choice-check"></i>
+                    </button>
+                </template>
+            </div>
+            <p class="theme-picker-foot"><i class="fa-solid fa-wand-magic-sparkles"></i> يتغير شكل الواجهة بالكامل دون التأثير على حسابك أو بياناتك.</p>
+        </div>
+    </section>
 
     <div id="offline-badge">
         <i class="fas fa-wifi-slash ml-2"></i> انقطع الاتصال بالإنترنت. يرجى التحقق من الشبكة.
@@ -330,8 +404,8 @@
                 </a>
                 {% endif %}
 
-                <button @click="nextTheme()" class="header-btn btn-press group" title="تغيير المظهر">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <button @click="nextTheme()" class="header-btn btn-press group" title="اختيار هوية الواجهة" aria-label="اختيار الثيم">
+                    <i class="fa-solid fa-palette"></i>
                 </button>
 
                 {% if session.get('user_id') %}
