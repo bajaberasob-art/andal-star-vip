@@ -29,7 +29,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;900&family=Changa:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800;900&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script>
@@ -54,15 +53,9 @@
     </script>
 
     <style>
-        /* ═══════════════════════════════════════════════
-           نظام الثيمات الملكية الستة
-        ═══════════════════════════════════════════════ */
-        body.theme-1 { --bg-primary: #06050a; --bg-secondary: #0e0d16; --bg-card: rgba(18, 16, 28, 0.8); --accent: #c9a84c; --accent-light: #e8c96a; --accent-dark: #9a7a2e; --accent-glow: rgba(201, 168, 76, 0.45); --glow: rgba(201, 168, 76, 0.12); --orb-1: #c9a84c; --orb-2: #7a5c20; --text-primary: #f0e6cc; --text-muted: rgba(240, 230, 204, 0.55); --border: rgba(201, 168, 76, 0.18); --border-bright: rgba(201, 168, 76, 0.4); --line: rgba(201, 168, 76, 0.25); --nav-bg: rgba(8, 7, 12, 0.95); }
-        body.theme-2 { --bg-primary: #03050f; --bg-secondary: #080e22; --bg-card: rgba(10, 15, 35, 0.8); --accent: #4a8fd4; --accent-light: #6eb0f0; --accent-dark: #2a5fa0; --accent-glow: rgba(74, 143, 212, 0.45); --glow: rgba(74, 143, 212, 0.12); --orb-1: #4a8fd4; --orb-2: #1a3a7a; --text-primary: #d4e8f8; --text-muted: rgba(212, 232, 248, 0.55); --border: rgba(74, 143, 212, 0.18); --border-bright: rgba(74, 143, 212, 0.4); --line: rgba(74, 143, 212, 0.25); --nav-bg: rgba(3, 5, 18, 0.95); }
-        body.theme-3 { --bg-primary: #030a06; --bg-secondary: #081408; --bg-card: rgba(8, 20, 10, 0.8); --accent: #3dab75; --accent-light: #5dd495; --accent-dark: #1d7a4a; --accent-glow: rgba(61, 171, 117, 0.45); --glow: rgba(61, 171, 117, 0.12); --orb-1: #3dab75; --orb-2: #0d5c2e; --text-primary: #ccf0de; --text-muted: rgba(204, 240, 222, 0.55); --border: rgba(61, 171, 117, 0.18); --border-bright: rgba(61, 171, 117, 0.4); --line: rgba(61, 171, 117, 0.25); --nav-bg: rgba(3, 8, 5, 0.95); }
-        body.theme-4 { --bg-primary: #07040e; --bg-secondary: #110820; --bg-card: rgba(16, 10, 32, 0.8); --accent: #9b72cf; --accent-light: #c09aee; --accent-dark: #6b42a0; --accent-glow: rgba(155, 114, 207, 0.45); --glow: rgba(155, 114, 207, 0.12); --orb-1: #9b72cf; --orb-2: #4a1a80; --text-primary: #e8d8f8; --text-muted: rgba(232, 216, 248, 0.55); --border: rgba(155, 114, 207, 0.18); --border-bright: rgba(155, 114, 207, 0.4); --line: rgba(155, 114, 207, 0.25); --nav-bg: rgba(7, 4, 14, 0.95); }
-        body.theme-5 { --bg-primary: #0a0305; --bg-secondary: #1c0608; --bg-card: rgba(28, 8, 10, 0.8); --accent: #c94a5a; --accent-light: #e87080; --accent-dark: #9a2030; --accent-glow: rgba(201, 74, 90, 0.45); --glow: rgba(201, 74, 90, 0.12); --orb-1: #c94a5a; --orb-2: #7a1020; --text-primary: #f8d8dc; --text-muted: rgba(248, 216, 220, 0.55); --border: rgba(201, 74, 90, 0.18); --border-bright: rgba(201, 74, 90, 0.4); --line: rgba(201, 74, 90, 0.25); --nav-bg: rgba(10, 3, 5, 0.95); }
-        body.theme-6 { --bg-primary: #f5f0e8; --bg-secondary: #ede5d5; --bg-card: rgba(255, 252, 245, 0.9); --accent: #8a6420; --accent-light: #b08030; --accent-dark: #5a4010; --accent-glow: rgba(138, 100, 32, 0.35); --glow: rgba(138, 100, 32, 0.08); --orb-1: #c9a84c; --orb-2: #e8d4a0; --text-primary: #1a1208; --text-muted: rgba(26, 18, 8, 0.55); --border: rgba(138, 100, 32, 0.2); --border-bright: rgba(138, 100, 32, 0.45); --line: rgba(138, 100, 32, 0.2); --nav-bg: rgba(240, 233, 218, 0.98); }
+        /* Default tokens before Alpine applies the saved identity. */
+        body { --bg-primary:#09080d; --bg-secondary:#17131d; --bg-card:rgba(23,19,29,.92); --accent:#c9a84c; --accent-light:#f0d47a; --accent-dark:#8d6729; --accent-glow:rgba(201,168,76,.42); --glow:rgba(201,168,76,.15); --orb-1:#c9a84c; --orb-2:#705020; --text-primary:#f5ecd8; --text-muted:rgba(245,236,216,.58); --border:rgba(201,168,76,.2); --border-bright:rgba(201,168,76,.48); --line:rgba(201,168,76,.2); --nav-bg:rgba(13,11,16,.97); }
+
 
         *, *::before, *::after { box-sizing: border-box; }
 
@@ -224,6 +217,7 @@
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         [x-cloak] { display: none !important; }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
 </head>
 
 <body x-data="{
