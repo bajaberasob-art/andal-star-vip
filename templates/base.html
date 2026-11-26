@@ -218,6 +218,7 @@
         [x-cloak] { display: none !important; }
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='independent-themes.css') }}">
 </head>
 
 <body x-data="{
@@ -376,7 +377,7 @@
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
 
-    <div>
+    <div class="app-shell" id="appShell">
         <header class="royal-header max-w-2xl mx-auto flex items-center justify-between z-50 relative">
             <div class="flex items-center gap-3">
                 <div class="brand-logo">
@@ -432,7 +433,7 @@
 
     {% if session.get('user_id') %}
         {% if session.get('role') != 'admin' %}
-        <nav class="nav-bar">
+        <nav class="nav-bar theme-nav" aria-label="التنقل الرئيسي">
             <a href="/dashboard" class="nav-item" id="nav-dash" onclick="playGlassSound()">
                 <i class="fa-solid fa-house"></i>
                 <span>الرئيسية</span>
@@ -447,7 +448,7 @@
             </a>
         </nav>
         {% else %}
-        <nav class="nav-bar">
+        <nav class="nav-bar theme-nav" aria-label="التنقل الرئيسي">
             <a href="/admin/dashboard" class="nav-item" id="nav-adash" onclick="playGlassSound()">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span>اللوحة</span>
