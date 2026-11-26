@@ -32,7 +32,7 @@ app = Flask(__name__)
 
 # ================== إعدادات التطبيق والبروكسي ==================
 app.config['SECRET_KEY'] = 'abdullah-voucher-system-2026-final'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.fzhqqhaeygcjvpigqtti:AndalStar2026@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.fzhqqhaeygcjvpigqtti:AndalStar2026@aws-1-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require'
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_size': 10,
     'pool_recycle': 1800,
