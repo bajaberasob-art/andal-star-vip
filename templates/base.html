@@ -592,7 +592,7 @@
                 if (path === route || path.startsWith(route + '/')) {
                     const el = document.getElementById(id);
                     if(el) el.classList.add('active');
-                    document.querySelectorAll('.identity-nav-link[href="' + route + '"]').forEach(link => link.classList.add('active'));
+                    document.querySelectorAll('.identity-nav-link[href="' + route + '"]').forEach(link => { link.classList.add('active'); link.setAttribute('aria-current', 'page'); });
                     break;
                 }
             }
