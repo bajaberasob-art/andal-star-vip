@@ -219,6 +219,7 @@
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='theme-identities.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme-experiences.css') }}">
 </head>
 
 <body x-data="{
@@ -426,7 +427,7 @@
             </div>
         </header>
 
-        <main class="max-w-2xl mx-auto px-4 py-5 relative z-10 theme-page-content">
+        <main class="max-w-2xl mx-auto px-4 py-5 relative z-10 theme-page-content" data-page="{{ request.path }}">
             {% block content %}{% endblock %}
         </main>
     </div>
