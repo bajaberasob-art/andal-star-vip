@@ -218,6 +218,7 @@
         [x-cloak] { display: none !important; }
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='themes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme-identities.css') }}">
 </head>
 
 <body x-data="{
@@ -425,15 +426,14 @@
             </div>
         </header>
 
-        <main class="max-w-2xl mx-auto px-4 py-5 relative z-10">
+        <main class="max-w-2xl mx-auto px-4 py-5 relative z-10 theme-page-content">
             {% block content %}{% endblock %}
         </main>
     </div>
 
     {% if session.get('user_id') %}
         {% if session.get('role') != 'admin' %}
-        <nav class="nav-bar">
-            <a href="/dashboard" class="nav-item" id="nav-dash" onclick="playGlassSound()">
+        <nav class="nav-bar legacy-customer-nav" aria-hidden="true" hidden><a href="/dashboard" class="nav-item" id="nav-dash" onclick="playGlassSound()">
                 <i class="fa-solid fa-house"></i>
                 <span>الرئيسية</span>
             </a>
@@ -445,6 +445,46 @@
                 <i class="fa-solid fa-ticket"></i>
                 <span>كروتي</span>
             </a>
+        </nav>
+        <nav class="identity-nav identity-nav-1" x-show="themeId === '1'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-store"></i><span>المتجر</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-2" x-show="themeId === '2'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-gauge-high"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-microchip"></i><span>الباقات</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-3" x-show="themeId === '3'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-leaf"></i><span>الخدمات</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-4" x-show="themeId === '4'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-shapes"></i><span>اكتشف</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-5" x-show="themeId === '5'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-bolt"></i><span>اشترِ</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-6" x-show="themeId === '6'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-grip"></i><span>الأقسام</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-7" x-show="themeId === '7'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-layer-group"></i><span>الخدمات</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
+        </nav>
+        <nav class="identity-nav identity-nav-8" x-show="themeId === '8'" x-cloak aria-label="التنقل الرئيسي">
+            <a href="/dashboard" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+            <a href="/buy" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-wave-square"></i><span>المتجر</span></a>
+            <a href="/myvouchers" class="identity-nav-link " onclick="playGlassSound()"><i class="fa-solid fa-ticket"></i><span>كروتي</span></a>
         </nav>
         {% else %}
         <nav class="nav-bar">
@@ -539,6 +579,8 @@
         // ── تحديد الصفحة النشطة في الشريط السفلي ──
         document.addEventListener('DOMContentLoaded', function() {
             const path = window.location.pathname;
+            // Keep the primary destination highlighted on related customer sub-pages.
+            const activeNavRoute = path === '/offers' ? '/buy' : (path === '/history' ? '/myvouchers' : path);
             const map = {
                 '/dashboard': 'nav-dash',
                 '/buy': 'nav-buy',
@@ -547,11 +589,15 @@
                 '/admin/customers': 'nav-acust',
                 '/admin/stock': 'nav-astock'
             };
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item, .identity-nav-link').forEach(el => {
+                el.classList.remove('active');
+                el.removeAttribute('aria-current');
+            });
             for (let [route, id] of Object.entries(map)) {
-                if (path === route || path.startsWith(route + '/')) {
+                if (activeNavRoute === route || activeNavRoute.startsWith(route + '/')) {
                     const el = document.getElementById(id);
                     if(el) el.classList.add('active');
+                    document.querySelectorAll('.identity-nav-link[href="' + route + '"]').forEach(link => { link.classList.add('active'); link.setAttribute('aria-current', 'page'); });
                     break;
                 }
             }
