@@ -117,3 +117,56 @@ body.theme-8 .theme-page-content .bento-icon{border-radius:13px;background:#20e5
 @media(prefers-reduced-motion:reduce){
  .theme-page-content,.theme-page-content>*,.identity-nav,.identity-nav-link{animation:none!important;transition:none!important}
 }
+
+/* Page-family composition: shop, promotions, voucher wallet, ledger and member profile. */
+body.theme-1 .theme-page-content .loyalty-banner,body.theme-1 .theme-page-content .smart-pick-card,body.theme-1 .theme-page-content .promo-card,body.theme-1 .theme-page-content .wallet-ticket,body.theme-1 .theme-page-content .summary-card,body.theme-1 .theme-page-content .rank-card{border-radius:26px;box-shadow:0 14px 36px #0004,inset 0 1px #ffffff12}
+body.theme-1 .theme-page-content .search-pill{border-radius:24px;border:1px solid #c9a84c35}
+body.theme-1 .theme-page-content .chip{border-radius:18px;padding:10px 17px}
+body.theme-1 .theme-page-content .offer-item{border-radius:28px;overflow:hidden}
+
+body.theme-2 .theme-page-content .search-pill,body.theme-2 .theme-page-content .smart-pick-card,body.theme-2 .theme-page-content .promo-card,body.theme-2 .theme-page-content .wallet-ticket,body.theme-2 .theme-page-content .summary-card,body.theme-2 .theme-page-content .rank-card{border-radius:13px;border:1px solid #55a9ff35}
+body.theme-2 .theme-page-content .category-chips,body.theme-2 .theme-page-content .filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:5px 2px 12px;scrollbar-width:none}
+body.theme-2 .theme-page-content .chip,body.theme-2 .theme-page-content .filter-pill{border-radius:7px;white-space:nowrap}
+body.theme-2 .theme-page-content .offer-item{border-radius:14px}
+body.theme-2 .theme-page-content .summary-card{background:linear-gradient(140deg,#0c2a49,#07172b)}
+
+body.theme-3 .theme-page-content .search-pill,body.theme-3 .theme-page-content .smart-pick-card,body.theme-3 .theme-page-content .promo-card,body.theme-3 .theme-page-content .wallet-ticket,body.theme-3 .theme-page-content .summary-card,body.theme-3 .theme-page-content .rank-card{border-radius:30px}
+body.theme-3 .theme-page-content .category-chips,body.theme-3 .theme-page-content .filter-scroll{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 12px;scrollbar-width:none}
+body.theme-3 .theme-page-content .chip,body.theme-3 .theme-page-content .filter-pill{border-radius:24px;padding:10px 17px}
+body.theme-3 .theme-page-content .offer-item{border-radius:32px;overflow:hidden}
+
+body.theme-4 .theme-page-content .smart-pick-card,body.theme-4 .theme-page-content .promo-card,body.theme-4 .theme-page-content .wallet-ticket,body.theme-4 .theme-page-content .summary-card,body.theme-4 .theme-page-content .rank-card{border-radius:24px;box-shadow:0 17px 35px #0004}
+body.theme-4 .theme-page-content .offer-item{border-radius:26px;overflow:hidden;transform:translateZ(0)}
+body.theme-4 .theme-page-content .discount-circle{box-shadow:0 0 26px #b38aff40}
+body.theme-4 .theme-page-content .category-chips,body.theme-4 .theme-page-content .filter-scroll{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none}
+
+body.theme-5 .theme-page-content .search-pill,body.theme-5 .theme-page-content .smart-pick-card,body.theme-5 .theme-page-content .promo-card,body.theme-5 .theme-page-content .wallet-ticket,body.theme-5 .theme-page-content .summary-card,body.theme-5 .theme-page-content .rank-card{border-radius:7px}
+body.theme-5 .theme-page-content .offer-item{border-radius:6px;overflow:hidden;border-right:4px solid #ff526c}
+body.theme-5 .theme-page-content .chip,body.theme-5 .theme-page-content .filter-pill{border-radius:5px;text-transform:none}
+body.theme-5 .theme-page-content .summary-card{box-shadow:5px 5px 0 #ff526c18}
+
+body.theme-6 .theme-page-content .search-pill,body.theme-6 .theme-page-content .smart-pick-card,body.theme-6 .theme-page-content .promo-card,body.theme-6 .theme-page-content .wallet-ticket,body.theme-6 .theme-page-content .summary-card,body.theme-6 .theme-page-content .rank-card{border-radius:4px;background:#fffdf8;border:1px solid #e6dccb;box-shadow:0 8px 25px #4834190b}
+body.theme-6 .theme-page-content .offer-item{border-radius:3px;background:#fffdf8;border:1px solid #e6dccb}
+body.theme-6 .theme-page-content .chip,body.theme-6 .theme-page-content .filter-pill{border-radius:2px;background:#f0e9dc;color:#65543a}
+body.theme-6 .theme-page-content .category-chips,body.theme-6 .theme-page-content .filter-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+body.theme-6 .theme-page-content .b-label{color:#82745f}
+
+body.theme-7 .theme-page-content .search-pill,body.theme-7 .theme-page-content .smart-pick-card,body.theme-7 .theme-page-content .promo-card,body.theme-7 .theme-page-content .wallet-ticket,body.theme-7 .theme-page-content .summary-card,body.theme-7 .theme-page-content .rank-card{border-radius:10px;border:1px solid #aebbc83b;background:linear-gradient(145deg,#2b343d,#1a2026)}
+body.theme-7 .theme-page-content .offer-item{border-radius:10px;overflow:hidden}
+body.theme-7 .theme-page-content .chip,body.theme-7 .theme-page-content .filter-pill{border-radius:6px}
+body.theme-7 .theme-page-content .category-chips,body.theme-7 .theme-page-content .filter-scroll{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+
+body.theme-8 .theme-page-content .search-pill,body.theme-8 .theme-page-content .smart-pick-card,body.theme-8 .theme-page-content .promo-card,body.theme-8 .theme-page-content .wallet-ticket,body.theme-8 .theme-page-content .summary-card,body.theme-8 .theme-page-content .rank-card{border-radius:19px;border:1px solid #20e5dc38;box-shadow:0 0 22px #20e5dc0b}
+body.theme-8 .theme-page-content .offer-item{border-radius:20px;overflow:hidden;box-shadow:0 0 25px #20e5dc12}
+body.theme-8 .theme-page-content .chip,body.theme-8 .theme-page-content .filter-pill{border-radius:12px}
+body.theme-8 .theme-page-content .category-chips,body.theme-8 .theme-page-content .filter-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+
+/* Consistent content rhythm and touch targets across the six customer destinations. */
+.theme-page-content .search-input{min-height:46px}
+.theme-page-content .chip,.theme-page-content .filter-pill{min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+.theme-page-content .wallet-ticket,.theme-page-content .offer-item,.theme-page-content .summary-card,.theme-page-content .rank-card{transition:transform .28s var(--identity-motion),box-shadow .28s ease,border-radius .28s ease}
+.theme-page-content .wallet-ticket:active,.theme-page-content .offer-item:active{transform:scale(.99)}
+@media(max-width:680px){
+ .theme-page-content .category-chips,.theme-page-content .filter-scroll{max-width:100%;overflow-x:auto;white-space:nowrap}
+ body.theme-6 .theme-page-content .balance-amount{font-size:3.2rem}
+}
