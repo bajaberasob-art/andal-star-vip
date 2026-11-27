@@ -170,3 +170,94 @@ body.theme-8 .theme-page-content .category-chips,body.theme-8 .theme-page-conten
  .theme-page-content .category-chips,.theme-page-content .filter-scroll{max-width:100%;overflow-x:auto;white-space:nowrap}
  body.theme-6 .theme-page-content .balance-amount{font-size:3.2rem}
 }
+
+
+/* ── Final polish: active navigation, accessibility, page surfaces and motion ── */
+.identity-nav-link.active{
+  color:var(--accent)!important;
+  background:color-mix(in srgb,var(--accent) 13%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 28%,transparent);
+}
+.identity-nav-link.active i{filter:drop-shadow(0 0 8px var(--accent-glow));}
+.identity-nav-link:focus-visible,
+.theme-page-content button:focus-visible,
+.theme-page-content a:focus-visible,
+.theme-page-content input:focus-visible,
+.theme-page-content select:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+}
+.theme-page-content :is(button,a,[role="button"]){-webkit-tap-highlight-color:transparent}
+.theme-page-content :is(.bank-card,.smart-pick-card,.promo-card,.wallet-ticket,.summary-card,.rank-card,.app-card,.pkg-item,.tx-card,.bento-box){
+  transition:background-color .28s ease,border-color .28s ease,box-shadow .28s ease,transform .28s var(--identity-motion),border-radius .28s ease;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .theme-page-content :is(.smart-pick-card,.promo-card,.wallet-ticket,.app-card,.pkg-item,.tx-card,.bento-box):hover{
+   transform:translateY(-3px);
+   box-shadow:0 15px 34px #0003,0 0 0 1px var(--border-bright);
+ }
+}
+.theme-page-content .search-pill{min-height:48px}
+.theme-page-content .search-input{width:100%;min-width:0}
+.theme-page-content :is(.category-chips,.filter-scroll){overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.theme-page-content :is(.chip,.filter-pill){flex:0 0 auto;cursor:pointer}
+.theme-page-content :is(.btn-royal,.btn-buy-promo,.hold-btn,.btn-action-sm,.btn-tx){touch-action:manipulation}
+.theme-page-content :is(.input-float,.search-input,select,textarea){
+  max-width:100%;
+  color:var(--text-primary);
+}
+.theme-page-content :is(.input-float,.search-input)::placeholder{color:var(--text-muted);opacity:1}
+
+/* The shop uses its real product-card classes; no data or purchase markup is changed. */
+.theme-page-content .pkg-grid{align-items:stretch}
+.theme-page-content .app-card,.theme-page-content .pkg-item{min-width:0;overflow:hidden}
+.theme-page-content .app-card-price{font-variant-numeric:tabular-nums}
+.theme-page-content .scarcity-bar{overflow:hidden;border-radius:999px}
+.theme-page-content .bottom-sheet-backdrop{overscroll-behavior:contain}
+.theme-page-content .bottom-sheet{max-height:min(86dvh,760px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.theme-page-content .wallet-ticket{overflow:hidden;min-width:0}
+.theme-page-content .wallet-ticket .font-mono{overflow-wrap:anywhere}
+.theme-page-content .tx-card{min-width:0}
+.theme-page-content .tx-amount{font-variant-numeric:tabular-nums}
+.theme-page-content .bento-box,.theme-page-content .rank-card{min-width:0}
+.theme-page-content .b-val{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+
+/* Ivory is a true light surface: neutralize legacy white text and dark glass fills. */
+body.theme-6 .theme-page-content .text-white,
+body.theme-6 .theme-page-content .text-gray-100,
+body.theme-6 .theme-page-content .text-gray-200{color:#302719!important}
+body.theme-6 .theme-page-content :is(.bg-black\/20,.bg-black\/30,.bg-black\/40){background:rgba(105,82,48,.07)!important}
+body.theme-6 .theme-page-content :is(.border-white\/5,.border-white\/10,.border-white\/20){border-color:#e4d9c8!important}
+body.theme-6 .theme-page-content :is(.input-float,.search-input,select,textarea){
+  color:#302719!important;background:#fffdf8!important;border-color:#d9cbb5!important;
+}
+body.theme-6 .theme-page-content :is(.input-float,.search-input,select,textarea)::placeholder{color:#887b67!important}
+body.theme-6 .theme-page-content :is(.btn-royal,.hold-btn){color:#fff!important}
+body.theme-6 .theme-page-content .wallet-ticket .text-emerald-400{color:#08784e!important}
+body.theme-6 .theme-page-content .wallet-ticket .text-white{color:#302719!important}
+body.theme-6 .theme-page-content .rank-card{color:#302719}
+body.theme-6 .theme-page-content .rank-card :is(.text-amber-400,.text-cyan-400){filter:saturate(.85)}
+
+/* Distinct composition cues for the remaining customer destinations. */
+body.theme-1 .theme-page-content .tx-card{border-radius:20px;border:1px solid #c9a84c2b;background:linear-gradient(110deg,#211b25,#100e14)}
+body.theme-2 .theme-page-content .tx-card{border-radius:12px;border-right:3px solid #55a9ff;background:#0b2038}
+body.theme-3 .theme-page-content .tx-card{border-radius:22px;background:#123323;border:1px solid #43c58a20}
+body.theme-4 .theme-page-content .tx-card{border-radius:20px;background:linear-gradient(120deg,#25173e,#120c20)}
+body.theme-5 .theme-page-content .tx-card{border-radius:5px;border-right:3px solid #ff526c;background:#241017}
+body.theme-6 .theme-page-content .tx-card{border-radius:3px;background:#fffdf8;border:1px solid #e6dccb}
+body.theme-7 .theme-page-content .tx-card{border-radius:9px;background:#252e36;border:1px solid #aebbc82b}
+body.theme-8 .theme-page-content .tx-card{border-radius:16px;background:linear-gradient(120deg,#07343a,#061b20);border:1px solid #20e5dc30}
+
+@media(max-width:680px){
+ .theme-page-content :is(.btn-royal,.hold-btn,.btn-buy-promo){min-height:46px}
+ .theme-page-content .bottom-sheet{border-radius:24px 24px 0 0}
+ body.theme-6 .identity-nav-6 .identity-nav-link{min-width:0;flex:1;justify-content:center}
+ body.theme-2 .identity-nav-2 .identity-nav-link,body.theme-7 .identity-nav-7 .identity-nav-link{min-width:0;flex:1}
+}
+@media(prefers-reduced-motion:reduce){
+ html:focus-within{scroll-behavior:auto!important}
+ body .royal-grid,body .orb,body .loader-spinner,
+ body .stagger-1,body .stagger-2,body .stagger-3,body .stagger-4,body .stagger-5,
+ body .avatar-wrapper{animation:none!important}
+ .theme-page-content :is(.bank-card,.smart-pick-card,.promo-card,.wallet-ticket,.summary-card,.rank-card,.app-card,.pkg-item,.tx-card,.bento-box){transition:none!important}
+}
