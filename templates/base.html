@@ -579,6 +579,8 @@
         // ── تحديد الصفحة النشطة في الشريط السفلي ──
         document.addEventListener('DOMContentLoaded', function() {
             const path = window.location.pathname;
+            // Keep the primary destination highlighted on related customer sub-pages.
+            const activeNavRoute = path === '/offers' ? '/buy' : (path === '/history' ? '/myvouchers' : path);
             const map = {
                 '/dashboard': 'nav-dash',
                 '/buy': 'nav-buy',
@@ -587,9 +589,12 @@
                 '/admin/customers': 'nav-acust',
                 '/admin/stock': 'nav-astock'
             };
-            document.querySelectorAll('.nav-item, .identity-nav-link').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item, .identity-nav-link').forEach(el => {
+                el.classList.remove('active');
+                el.removeAttribute('aria-current');
+            });
             for (let [route, id] of Object.entries(map)) {
-                if (path === route || path.startsWith(route + '/')) {
+                if (activeNavRoute === route || activeNavRoute.startsWith(route + '/')) {
                     const el = document.getElementById(id);
                     if(el) el.classList.add('active');
                     document.querySelectorAll('.identity-nav-link[href="' + route + '"]').forEach(link => { link.classList.add('active'); link.setAttribute('aria-current', 'page'); });
